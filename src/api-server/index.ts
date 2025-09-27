@@ -1,232 +1,400 @@
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
-import compression from 'compression';
-import rateLimit from 'express-rate-limit';
 import { config } from 'dotenv';
-import { database } from '../shared/config/database';
-import { logger, requestLogger } from '../shared/utils/logger';
-import { 
-  globalErrorHandler, 
-  notFoundHandler, 
-  securityHeaders, 
-  timeoutHandler,
-  gracefulShutdown 
-} from './middleware/error.middleware';
-import apiRoutes from './routes';
+import mongoose from 'mongoose';
+import * as bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 // Load environment variables
 config();
 
 const app = express();
 const PORT = process.env.API_PORT || 4000;
-const NODE_ENV = process.env.NODE_ENV || 'development';
 
-/**
- * Security Configuration
- */
-// Security headers
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
-    },
-  },
-  crossOriginEmbedderPolicy: false, // Allow for dev tools
+// Basic middleware
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+  credentials: true
 }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
-// Custom security headers
-app.use(securityHeaders);
+// Simple User Schema
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  avatar: { type: String, default: '' }
+}, { timestamps: true });
 
-// Trust proxy for accurate IP addresses
-app.set('trust proxy', 1);
-
-/**
- * CORS Configuration
- */
-const corsOptions = {
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://127.0.0.1:3000',
-    ];
-
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      logger.warn('CORS blocked origin:', origin);
-      return callback(new Error('Not allowed by CORS'), false);
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'Authorization',
-    'X-API-Key',
-  ],
-  exposedHeaders: ['X-Total-Count'],
-};
-
-app.use(cors(corsOptions));
-
-/**
- * Rate Limiting
- */
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: NODE_ENV === 'development' ? 1000 : 100, // Limit each IP
-  message: {
-    success: false,
-    message: 'Too many requests from this IP, please try again later.',
-    code: 'RATE_LIMIT_EXCEEDED',
-  },
-  standardHeaders: true, // Return rate limit info in headers
-  legacyHeaders: false, // Disable X-RateLimit headers
-  skip: (req) => {
-    // Skip rate limiting for health checks
-    return req.path === '/api/health';
-  },
+UserSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
 });
 
-app.use(limiter);
+const User = mongoose.model('User', UserSchema);
 
-/**
- * Body Parsing & Compression
- */
-app.use(compression());
-app.use(express.json({ 
-  limit: '10mb',
-  verify: (req: any, res, buf) => {
-    req.rawBody = buf;
+// Simple VideoCall Schema  
+const VideoCallSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: String,
+  hostId: { type: String, required: true },
+  roomId: { type: String, unique: true, required: true },
+  scheduledAt: Date,
+  startedAt: Date,
+  endedAt: Date,
+  status: { 
+    type: String, 
+    enum: ['scheduled', 'active', 'ended', 'cancelled'],
+    default: 'scheduled' 
+  },
+  type: {
+    type: String,
+    enum: ['instant', 'scheduled', 'recurring'],
+    default: 'instant'
+  },
+  maxParticipants: { type: Number, default: 10 },
+  participants: [{
+    userId: String,
+    joinedAt: { type: Date, default: Date.now },
+    leftAt: Date,
+    role: { 
+      type: String, 
+      enum: ['host', 'co-host', 'participant'], 
+      default: 'participant' 
+    },
+    isConnected: { type: Boolean, default: false }
+  }],
+  settings: {
+    enableVideo: { type: Boolean, default: true },
+    enableAudio: { type: Boolean, default: true },
+    enableChat: { type: Boolean, default: true },
+    enableScreenShare: { type: Boolean, default: true },
+    enableRecording: { type: Boolean, default: false },
+    isPublic: { type: Boolean, default: false },
+    requireAuth: { type: Boolean, default: true },
+    allowGuests: { type: Boolean, default: true }
   }
-}));
-app.use(express.urlencoded({ 
-  extended: true, 
-  limit: '10mb' 
-}));
+}, { timestamps: true });
 
-/**
- * Logging Middleware
- */
-app.use(requestLogger);
+const VideoCall = mongoose.model('VideoCall', VideoCallSchema);
 
-/**
- * Request Timeout
- */
-app.use(timeoutHandler(30000)); // 30 seconds
+// JWT Helper Functions
+const generateToken = (payload: any, secret: string, expiresIn: string) => {
+  return jwt.sign(payload, secret, { expiresIn } as jwt.SignOptions);
+};
 
-/**
- * Routes
- */
-app.use('/api', apiRoutes);
+const verifyToken = (token: string, secret: string) => {
+  return jwt.verify(token, secret) as any;
+};
 
-// Root endpoint
-app.get('/', (req, res) => {
+// Auth Middleware
+const authenticateToken = async (req: any, res: any, next: any) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Access token required' });
+  }
+
+  try {
+    const decoded = verifyToken(token, process.env.JWT_ACCESS_SECRET || 'default-secret');
+    const user = await User.findById(decoded.userId).select('-password');
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'User not found' });
+    }
+    req.user = user;
+    return next();
+  } catch (error) {
+    return res.status(403).json({ success: false, message: 'Invalid token' });
+  }
+};
+
+// Routes
+
+// Health check
+app.get('/api/health', (req, res) => {
   res.json({
-    message: 'Video Calling API Server',
-    version: process.env.npm_package_version || '1.0.0',
-    status: 'running',
-    environment: NODE_ENV,
-    api: '/api',
-    health: '/api/health',
+    success: true,
+    message: 'Video Call API Server is running!',
     timestamp: new Date().toISOString(),
+    port: PORT
   });
 });
 
-/**
- * Error Handling Middleware
- */
-app.use(notFoundHandler);
-app.use(globalErrorHandler);
+// Auth Routes
+app.post('/api/auth/register', async (req, res): Promise<any> => {
+  try {
+    const { name, email, password } = req.body;
 
-/**
- * Server Startup
- */
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, and password are required'
+      });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message: 'User with this email already exists'
+      });
+    }
+
+    const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+    const user = new User({ name, email, password, avatar });
+    await user.save();
+
+    const accessToken = generateToken(
+      { userId: user._id, email: user.email, name: user.name },
+      process.env.JWT_ACCESS_SECRET || 'default-secret',
+      '15m'
+    );
+
+    const refreshToken = generateToken(
+      { userId: user._id },
+      process.env.JWT_REFRESH_SECRET || 'default-refresh-secret', 
+      '7d'
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      data: {
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar
+        },
+        token: accessToken,
+        refreshToken
+      }
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: 'Registration failed',
+      error: error.message
+    });
+  }
+});
+
+app.post('/api/auth/login', async (req, res): Promise<any> => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required'
+      });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    const accessToken = generateToken(
+      { userId: user._id, email: user.email, name: user.name },
+      process.env.JWT_ACCESS_SECRET || 'default-secret',
+      '15m'
+    );
+
+    const refreshToken = generateToken(
+      { userId: user._id },
+      process.env.JWT_REFRESH_SECRET || 'default-refresh-secret',
+      '7d'
+    );
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar
+        },
+        token: accessToken,
+        refreshToken
+      }
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: 'Login failed',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/auth/profile', authenticateToken, (req: any, res) => {
+  return res.json({
+    success: true,
+    data: {
+      user: {
+        _id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        avatar: req.user.avatar
+      }
+    }
+  });
+});
+
+// Video Call Routes
+app.post('/api/video-calls', authenticateToken, async (req: any, res): Promise<any> => {
+  try {
+    const { title, description, scheduledAt, type, settings } = req.body;
+
+    if (!title) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title is required'
+      });
+    }
+
+    const roomId = `room_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+
+    const videoCall = new VideoCall({
+      title,
+      description,
+      hostId: req.user._id.toString(),
+      roomId,
+      scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
+      type: type || 'instant',
+      participants: [{
+        userId: req.user._id.toString(),
+        role: 'host',
+        isConnected: false
+      }],
+      settings: {
+        enableVideo: true,
+        enableAudio: true,
+        enableChat: true,
+        enableScreenShare: true,
+        enableRecording: false,
+        isPublic: false,
+        requireAuth: true,
+        allowGuests: true,
+        ...settings
+      }
+    });
+
+    await videoCall.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Video call created successfully',
+      data: {
+        call: videoCall,
+        joinLink: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/room/${roomId}`
+      }
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to create video call',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/video-calls', authenticateToken, async (req: any, res): Promise<any> => {
+  try {
+    const calls = await VideoCall.find({
+      $or: [
+        { hostId: req.user._id.toString() },
+        { 'participants.userId': req.user._id.toString() }
+      ]
+    }).sort({ createdAt: -1 });
+
+    return res.json({
+      success: true,
+      data: { calls }
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch video calls',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/video-calls/:roomId', async (req, res): Promise<any> => {
+  try {
+    const { roomId } = req.params;
+    const call = await VideoCall.findOne({ roomId });
+
+    if (!call) {
+      return res.status(404).json({
+        success: false,
+        message: 'Video call not found'
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: { call }
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch video call',
+      error: error.message
+    });
+  }
+});
+
+// Connect to database and start server
 async function startServer() {
   try {
     // Connect to database
     console.log('🔗 Connecting to database...');
-    logger.info('Connecting to database...');
-    await database.connect();
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/videocall-db';
+    await mongoose.connect(mongoUri);
     console.log('✅ Database connected successfully!');
 
     // Start server
     const server = app.listen(PORT, () => {
-      logger.info(`🚀 API Server started successfully!`);
-      logger.info(`📍 Server running on port ${PORT}`);
-      logger.info(`🌍 Environment: ${NODE_ENV}`);
-      logger.info(`💾 Database: Connected`);
-      logger.info(`🔗 API Endpoint: http://localhost:${PORT}/api`);
-      logger.info(`🏥 Health Check: http://localhost:${PORT}/api/health`);
-      
-      if (NODE_ENV === 'development') {
-        logger.info(`📚 Available routes:`);
-        logger.info(`   POST /api/auth/register`);
-        logger.info(`   POST /api/auth/login`);
-        logger.info(`   GET  /api/auth/profile`);
-        logger.info(`   POST /api/video-calls`);
-        logger.info(`   GET  /api/video-calls`);
-        logger.info(`   POST /api/video-calls/join`);
-      }
-    });
-
-    // Handle server errors
-    server.on('error', (error: any) => {
-      if (error.code === 'EADDRINUSE') {
-        logger.error(`Port ${PORT} is already in use`);
-      } else {
-        logger.error('Server error:', error);
-      }
-      process.exit(1);
+      console.log('🚀 Video Call API Server started successfully!');
+      console.log(`📍 Server running on http://localhost:${PORT}`);
+      console.log(`🔍 Health check: http://localhost:${PORT}/api/health`);
+      console.log('📋 Available endpoints:');
+      console.log('  POST /api/auth/register - Register new user');
+      console.log('  POST /api/auth/login - Login user');
+      console.log('  GET /api/auth/profile - Get user profile');
+      console.log('  POST /api/video-calls - Create video call');
+      console.log('  GET /api/video-calls - Get user\'s video calls');
+      console.log('  GET /api/video-calls/:roomId - Get video call by room ID');
     });
 
     // Graceful shutdown
-    gracefulShutdown(server);
+    process.on('SIGTERM', () => {
+      console.log('SIGTERM received, shutting down gracefully');
+      server.close(() => {
+        mongoose.connection.close();
+        process.exit(0);
+      });
+    });
 
-    return server;
   } catch (error) {
-    logger.error('Failed to start server:', error);
+    console.error('❌ Server startup failed:', error);
     process.exit(1);
   }
 }
 
-/**
- * Handle uncaught errors
- */
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection at:', { promise, reason });
-});
-
-process.on('uncaughtException', (error) => {
-  logger.error('Uncaught Exception:', error);
-  process.exit(1);
-});
-
-// Start server if this file is run directly
 if (require.main === module) {
-  console.log('🚀 Starting API server...');
-  startServer().catch((error) => {
-    console.error('❌ Server startup failed:', error);
-    logger.error('Server startup failed:', error);
-    process.exit(1);
-  });
+  startServer();
 }
 
 export { app, startServer };
-export default app;

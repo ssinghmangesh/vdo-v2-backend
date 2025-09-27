@@ -1,16 +1,7 @@
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import cors from 'cors';
 import { config } from 'dotenv';
-import { database } from '../shared/config/database';
-import { logger } from '../shared/utils/logger';
-import { RoomService } from './services/room.service';
-import { WebRTCService } from './services/webrtc.service';
-import { SFUService } from '../sfu-server/services/sfu.service';
-import {
-  ClientToServerEvents,
-  ServerToClientEvents,
-} from '../shared/types';
+import mongoose from 'mongoose';
 
 // Load environment variables
 config();
@@ -19,420 +10,464 @@ const PORT = process.env.SIGNALING_PORT || 3002;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Create HTTP server
-const httpServer = createServer();
+const server = createServer();
 
-// Configure CORS for Socket.IO
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-];
-
-// Create Socket.IO server
-const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(httpServer, {
+// Initialize Socket.IO with CORS
+const io = new SocketIOServer(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+      'http://localhost:3000', 
+      'http://127.0.0.1:3000',
+      'http://localhost:4000'
+    ],
     methods: ['GET', 'POST'],
     credentials: true,
   },
   transports: ['websocket', 'polling'],
-  pingTimeout: 60000,
-  pingInterval: 25000,
-  upgradeTimeout: 30000,
-  maxHttpBufferSize: 1e6, // 1MB
-  allowEIO3: true, // Allow Engine.IO v3 clients
 });
 
+// Simple User Schema (for participant info)
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  avatar: { type: String, default: '' }
+}, { timestamps: true });
+
+const User = mongoose.model('User', UserSchema);
+
+// In-memory room management
+interface Participant {
+  id: string;
+  socketId: string;
+  userId?: string;
+  name: string;
+  email?: string;
+  avatar?: string;
+  isConnected: boolean;
+  joinedAt: Date;
+  role: 'host' | 'participant';
+  audioEnabled: boolean;
+  videoEnabled: boolean;
+}
+
+interface Room {
+  roomId: string;
+  callId?: string;
+  hostId: string;
+  participants: Map<string, Participant>;
+  createdAt: Date;
+  isActive: boolean;
+  settings: {
+    enableVideo: boolean;
+    enableAudio: boolean;
+    enableChat: boolean;
+    enableScreenShare: boolean;
+    maxParticipants: number;
+  };
+}
+
+class SignalingService {
+  private rooms: Map<string, Room> = new Map();
+  private socketToRoom: Map<string, string> = new Map();
+
+  // Create or join a room
+  async joinRoom(socket: any, data: {
+    roomId: string;
+    userId?: string;
+    name: string;
+    email?: string;
+    isHost?: boolean;
+  }) {
+    try {
+      const { roomId, userId, name, email, isHost = false } = data;
+
+      console.log(`👤 User attempting to join room: ${roomId}`, { userId, name, isHost });
+
+      let room = this.rooms.get(roomId);
+
+      // Create room if it doesn't exist
+      if (!room) {
+        room = {
+          roomId,
+          hostId: userId || socket.id,
+          participants: new Map(),
+          createdAt: new Date(),
+          isActive: true,
+          settings: {
+            enableVideo: true,
+            enableAudio: true,
+            enableChat: true,
+            enableScreenShare: true,
+            maxParticipants: 10
+          }
+        };
+        this.rooms.set(roomId, room);
+        console.log(`🏠 Created new room: ${roomId}`);
+      }
+
+      // Check room capacity
+      if (room.participants.size >= room.settings.maxParticipants) {
+        socket.emit('room:error', {
+          success: false,
+          message: 'Room is full',
+          code: 'ROOM_FULL'
+        });
+        return;
+      }
+
+      // Get user info from database if userId provided
+      let userInfo = { name, email, avatar: '' };
+      if (userId) {
+        try {
+          const user = await User.findById(userId);
+          if (user) {
+            userInfo = {
+              name: user.name,
+              email: user.email,
+              avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
+            };
+          }
+        } catch (error) {
+          console.log('User not found in database, using provided info');
+        }
+      }
+
+      // Create participant
+      const participant: Participant = {
+        id: userId || socket.id,
+        socketId: socket.id,
+        userId,
+        name: userInfo.name,
+        email: userInfo.email,
+        avatar: userInfo.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
+        isConnected: true,
+        joinedAt: new Date(),
+        role: isHost || room.participants.size === 0 ? 'host' : 'participant',
+        audioEnabled: true,
+        videoEnabled: true
+      };
+
+      // Add participant to room
+      room.participants.set(socket.id, participant);
+      this.socketToRoom.set(socket.id, roomId);
+
+      // Join Socket.IO room
+      await socket.join(roomId);
+
+      // Notify participant of successful join
+      socket.emit('room:joined', {
+        success: true,
+        room: {
+          roomId: room.roomId,
+          hostId: room.hostId,
+          participantCount: room.participants.size,
+          settings: room.settings
+        },
+        participant,
+        participants: Array.from(room.participants.values()).filter(p => p.socketId !== socket.id)
+      });
+
+      // Notify other participants
+      socket.to(roomId).emit('participant:joined', {
+        participant,
+        participantCount: room.participants.size
+      });
+
+      console.log(`✅ User joined room successfully: ${roomId}`, { 
+        participantId: participant.id, 
+        totalParticipants: room.participants.size 
+      });
+
+    } catch (error) {
+      console.error('Error joining room:', error);
+      socket.emit('room:error', {
+        success: false,
+        message: 'Failed to join room',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  // Handle participant leaving
+  async leaveRoom(socket: any) {
+    const roomId = this.socketToRoom.get(socket.id);
+    if (!roomId) return;
+
+    const room = this.rooms.get(roomId);
+    if (!room) return;
+
+    const participant = room.participants.get(socket.id);
+    if (!participant) return;
+
+    // Remove participant
+    room.participants.delete(socket.id);
+    this.socketToRoom.delete(socket.id);
+
+    // Notify remaining participants
+    socket.to(roomId).emit('participant:left', {
+      participant,
+      participantCount: room.participants.size
+    });
+
+    // Clean up empty room
+    if (room.participants.size === 0) {
+      this.rooms.delete(roomId);
+      console.log(`🧹 Cleaned up empty room: ${roomId}`);
+    } else {
+      // If host left, assign new host
+      if (participant.role === 'host') {
+        const newHost = Array.from(room.participants.values())[0];
+        if (newHost) {
+          newHost.role = 'host';
+          room.hostId = newHost.id;
+          socket.to(roomId).emit('host:changed', { newHost });
+          console.log(`👑 New host assigned: ${newHost.id}`);
+        }
+      }
+    }
+
+    console.log(`👋 Participant left room: ${roomId}`, { 
+      participantId: participant.id,
+      remainingParticipants: room.participants.size 
+    });
+  }
+
+  // Get room stats
+  getRoomStats(roomId: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) return null;
+
+    return {
+      roomId: room.roomId,
+      hostId: room.hostId,
+      participantCount: room.participants.size,
+      participants: Array.from(room.participants.values()),
+      createdAt: room.createdAt,
+      isActive: room.isActive,
+      settings: room.settings
+    };
+  }
+
+  // Get all rooms
+  getAllRooms() {
+    return Array.from(this.rooms.values()).map(room => ({
+      roomId: room.roomId,
+      hostId: room.hostId,
+      participantCount: room.participants.size,
+      createdAt: room.createdAt,
+      isActive: room.isActive
+    }));
+  }
+}
+
 // Initialize services
-const roomService = new RoomService(io);
-const webrtcService = new WebRTCService(io, roomService);
-const sfuService = new SFUService(io);
+const signalingService = new SignalingService();
 
-/**
- * Socket.IO connection handler
- */
+// Socket.IO connection handling
 io.on('connection', (socket) => {
-  logger.info('Client connected', {
-    socketId: socket.id,
+  console.log(`🔌 Client connected: ${socket.id}`, {
     remoteAddress: socket.handshake.address,
-    userAgent: socket.handshake.headers['user-agent'],
+    userAgent: socket.handshake.headers['user-agent']?.substring(0, 50)
   });
-
-  // Send ICE servers configuration immediately
-  webrtcService.sendIceServers(socket);
 
   /**
    * Room Management Events
    */
   socket.on('room:join', async (data) => {
-    logger.debug('Room join request', { socketId: socket.id, data });
-    await roomService.joinRoom(socket, data);
+    console.log('📥 Room join request:', { socketId: socket.id, data });
+    await signalingService.joinRoom(socket, data);
   });
 
-  socket.on('room:leave', async (data) => {
-    logger.debug('Room leave request', { socketId: socket.id, data });
-    await roomService.leaveRoom(socket, data.roomId);
-  });
-
-  socket.on('room:end-call', async (data) => {
-    logger.debug('End call request', { socketId: socket.id, data });
-    await roomService.endCall(socket);
-  });
-
-  /**
-   * Participant Events
-   */
-  socket.on('participant:update-media-state', (data) => {
-    logger.debug('Media state update', { socketId: socket.id, data });
-    roomService.updateParticipantMediaState(socket, data);
+  socket.on('room:leave', async () => {
+    console.log('📤 Room leave request:', { socketId: socket.id });
+    await signalingService.leaveRoom(socket);
   });
 
   /**
    * WebRTC Signaling Events
    */
-  socket.on('webrtc:offer', (data) => {
-    logger.debug('WebRTC offer', { socketId: socket.id, to: data.to });
-    webrtcService.handleOffer(socket, data);
+  socket.on('webrtc:offer', (data: { to: string; offer: any }) => {
+    console.log('📡 WebRTC offer:', { from: socket.id, to: data.to });
+    socket.to(data.to).emit('webrtc:offer', {
+      from: socket.id,
+      offer: data.offer
+    });
   });
 
-  socket.on('webrtc:answer', (data) => {
-    logger.debug('WebRTC answer', { socketId: socket.id, to: data.to });
-    webrtcService.handleAnswer(socket, data);
+  socket.on('webrtc:answer', (data: { to: string; answer: any }) => {
+    console.log('📡 WebRTC answer:', { from: socket.id, to: data.to });
+    socket.to(data.to).emit('webrtc:answer', {
+      from: socket.id,
+      answer: data.answer
+    });
   });
 
-  socket.on('webrtc:ice-candidate', (data) => {
-    logger.debug('ICE candidate', { socketId: socket.id, to: data.to });
-    webrtcService.handleIceCandidate(socket, data);
-  });
-
-  /**
-   * Additional WebRTC Events
-   */
-  socket.on('webrtc:connection-state', (data: { to: string; state: string }) => {
-    webrtcService.handleConnectionStateChange(socket, data);
-  });
-
-  socket.on('webrtc:renegotiation-needed', (data: { to: string }) => {
-    webrtcService.handleRenegotiationNeeded(socket, data);
-  });
-
-  socket.on('webrtc:data-channel', (data: { to?: string; message: any; type: string }) => {
-    webrtcService.handleDataChannelMessage(socket, data);
-  });
-
-  socket.on('webrtc:screen-share', (data: { enabled: boolean; to?: string }) => {
-    webrtcService.handleScreenShare(socket, data);
-  });
-
-  socket.on('webrtc:get-stats', (callback: (stats: any) => void) => {
-    webrtcService.handleGetStats(socket, callback);
-  });
-
-  socket.on('webrtc:get-ice-servers', () => {
-    webrtcService.sendIceServers(socket);
+  socket.on('webrtc:ice-candidate', (data: { to: string; candidate: any }) => {
+    console.log('🧊 ICE candidate:', { from: socket.id, to: data.to });
+    socket.to(data.to).emit('webrtc:ice-candidate', {
+      from: socket.id,
+      candidate: data.candidate
+    });
   });
 
   /**
-   * SFU Events
+   * Media Control Events
    */
-  socket.on('sfu:join-room', async (data) => {
-    logger.debug('SFU join room request', { socketId: socket.id, data });
-    await sfuService.joinRoom(socket, data);
-  });
+  socket.on('media:toggle', (data: { type: 'audio' | 'video'; enabled: boolean }) => {
+    const roomId = signalingService['socketToRoom'].get(socket.id);
+    if (!roomId) return;
 
-  socket.on('sfu:create-transport', async (data) => {
-    logger.debug('SFU create transport request', { socketId: socket.id, data });
-    await sfuService.createWebRtcTransport(socket, data);
-  });
+    const room = signalingService['rooms'].get(roomId);
+    if (!room) return;
 
-  socket.on('sfu:connect-transport', async (data) => {
-    logger.debug('SFU connect transport request', { socketId: socket.id, data });
-    await sfuService.connectTransport(socket, data);
-  });
+    const participant = room.participants.get(socket.id);
+    if (!participant) return;
 
-  socket.on('sfu:produce', async (data: { kind: 'audio' | 'video'; rtpParameters: any }) => {
-    logger.debug('SFU produce request', { socketId: socket.id, data });
-    await sfuService.produce(socket, data);
-  });
+    // Update participant media state
+    if (data.type === 'audio') {
+      participant.audioEnabled = data.enabled;
+    } else if (data.type === 'video') {
+      participant.videoEnabled = data.enabled;
+    }
 
-  socket.on('sfu:consume', async (data) => {
-    logger.debug('SFU consume request', { socketId: socket.id, data });
-    await sfuService.consume(socket, data);
-  });
+    // Notify other participants
+    socket.to(roomId).emit('participant:media-changed', {
+      participantId: participant.id,
+      type: data.type,
+      enabled: data.enabled
+    });
 
-  socket.on('sfu:resume-consumer', async (data) => {
-    logger.debug('SFU resume consumer request', { socketId: socket.id, data });
-    await sfuService.resumeConsumer(socket, data);
-  });
-
-  socket.on('sfu:pause-producer', async (data) => {
-    logger.debug('SFU pause producer request', { socketId: socket.id, data });
-    await sfuService.pauseProducer(socket, data);
+    console.log(`🎵 Media toggled:`, { 
+      participantId: participant.id, 
+      type: data.type, 
+      enabled: data.enabled 
+    });
   });
 
   /**
-   * Chat and Messaging Events
+   * Chat Events
    */
-  socket.on('chat:message', (data: { message: string; to?: string }) => {
-    const room = roomService.getRoomBySocket(socket.id);
-    const participant = roomService.getParticipantBySocket(socket.id);
+  socket.on('chat:message', (data: { message: string; timestamp?: number }) => {
+    const roomId = signalingService['socketToRoom'].get(socket.id);
+    if (!roomId) return;
 
-    if (room && participant) {
-      const messageData = {
-        id: Date.now().toString(),
-        from: participant.peerId,
-        fromUser: participant.user,
-        message: data.message,
-        timestamp: new Date().toISOString(),
-        type: 'text',
-      };
+    const room = signalingService['rooms'].get(roomId);
+    if (!room) return;
 
-      if (data.to) {
-        // Send to specific participant
-        const toParticipant = Array.from(room.participants.values())
-          .find(p => p.peerId === data.to);
-        
-        if (toParticipant && toParticipant.isConnected) {
-          io.to(toParticipant.socketId).emit('chat:message', messageData);
-        }
-      } else {
-        // Broadcast to all participants in room
-        socket.to(room.roomId).emit('chat:message', messageData);
+    const participant = room.participants.get(socket.id);
+    if (!participant) return;
+
+    const chatMessage = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      message: data.message,
+      timestamp: data.timestamp || Date.now(),
+      participant: {
+        id: participant.id,
+        name: participant.name,
+        avatar: participant.avatar
       }
+    };
 
-      logger.debug('Chat message sent', {
-        roomId: room.roomId,
-        from: participant.peerId,
-        to: data.to || 'broadcast',
-      });
-    }
-  });
+    // Broadcast to all participants in room
+    io.to(roomId).emit('chat:message', chatMessage);
 
-  socket.on('chat:typing', (data: { isTyping: boolean }) => {
-    const room = roomService.getRoomBySocket(socket.id);
-    const participant = roomService.getParticipantBySocket(socket.id);
-
-    if (room && participant) {
-      socket.to(room.roomId).emit('chat:typing', {
-        from: participant.peerId,
-        fromUser: participant.user,
-        isTyping: data.isTyping,
-      });
-    }
+    console.log(`💬 Chat message:`, { 
+      roomId, 
+      participantId: participant.id, 
+      message: data.message.substring(0, 50) 
+    });
   });
 
   /**
    * Admin/Debug Events
    */
-  socket.on('admin:get-room-stats', (data: { roomId: string }, callback: (result: any) => void) => {
+  socket.on('admin:get-room-stats', (data: { roomId: string }, callback) => {
     try {
-      const stats = roomService.getRoomStats(data.roomId);
+      const stats = signalingService.getRoomStats(data.roomId);
       callback({ success: true, data: stats });
     } catch (error) {
-      logger.error('Error getting room stats:', error);
+      console.error('Error getting room stats:', error);
       callback({ success: false, error: 'Failed to get room stats' });
     }
   });
 
-  socket.on('admin:get-all-rooms', (callback: (result: any) => void) => {
+  socket.on('admin:get-all-rooms', (callback) => {
     try {
-      const rooms = roomService.getAllRooms().map(room => ({
-        roomId: room.roomId,
-        callId: room.callId,
-        hostId: room.hostId,
-        participantCount: room.participants.size,
-        connectedCount: Array.from(room.participants.values()).filter(p => p.isConnected).length,
-        createdAt: room.createdAt,
-      }));
+      const rooms = signalingService.getAllRooms();
       callback({ success: true, data: rooms });
     } catch (error) {
-      logger.error('Error getting all rooms:', error);
+      console.error('Error getting all rooms:', error);
       callback({ success: false, error: 'Failed to get rooms' });
     }
   });
 
   /**
-   * Connection Events
+   * Disconnect Event
    */
   socket.on('disconnect', async (reason) => {
-    logger.info('Client disconnected', {
+    console.log('🔌 Client disconnected:', {
       socketId: socket.id,
       reason,
       remoteAddress: socket.handshake.address,
     });
-
-    await roomService.handleDisconnect(socket);
-    await sfuService.leaveRoom(socket);
+    await signalingService.leaveRoom(socket);
   });
 
-  socket.on('connect_error' as any, (error: Error) => {
-    logger.error('Socket connection error:', {
+  socket.on('connect_error', (error: Error) => {
+    console.error('🔌 Socket connection error:', {
       socketId: socket.id,
       error: error.message,
       remoteAddress: socket.handshake.address,
     });
   });
-
-  // Handle any other events
-  socket.onAny((eventName, ...args) => {
-    logger.debug('Unhandled socket event', {
-      socketId: socket.id,
-      eventName,
-      args: args.length,
-    });
-  });
 });
 
-/**
- * Server health check and statistics
- */
-setInterval(async () => {
-  const sfuStats = await sfuService.getStats();
-  const stats = {
-    connectedClients: io.engine.clientsCount,
-    activeRooms: roomService.getAllRooms().length,
-    totalParticipants: roomService.getAllRooms().reduce(
-      (total, room) => total + room.participants.size, 0
-    ),
-    sfu: sfuStats,
-    uptime: process.uptime(),
-    memory: process.memoryUsage(),
-  };
-
-  logger.debug('Signaling server stats', stats);
-}, 60000); // Every minute
-
-/**
- * Clean up inactive rooms periodically
- */
-setInterval(() => {
-  const rooms = roomService.getAllRooms();
-  let cleanedRooms = 0;
-
-  rooms.forEach(room => {
-    const connectedParticipants = Array.from(room.participants.values())
-      .filter(p => p.isConnected);
-
-    if (connectedParticipants.length === 0) {
-      // Check if room has been empty for more than 5 minutes
-      const lastActivity = Math.max(
-        ...Array.from(room.participants.values()).map(p => 
-          p.joinedAt.getTime()
-        )
-      );
-
-      if (Date.now() - lastActivity > 5 * 60 * 1000) {
-        roomService.getAllRooms().splice(
-          roomService.getAllRooms().indexOf(room), 1
-        );
-        cleanedRooms++;
-      }
-    }
-  });
-
-  if (cleanedRooms > 0) {
-    logger.info(`Cleaned up ${cleanedRooms} inactive rooms`);
-  }
-}, 2 * 60 * 1000); // Every 2 minutes
-
-/**
- * Error handling
- */
-io.on('connect_error', (error) => {
-  logger.error('Socket.IO connection error:', error);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection in signaling server:', { reason, promise });
-});
-
-process.on('uncaughtException', (error) => {
-  logger.error('Uncaught Exception in signaling server:', error);
-  process.exit(1);
-});
-
-/**
- * Graceful shutdown
- */
-const gracefulShutdown = () => {
-  logger.info('Signaling server shutting down gracefully...');
-  
-  // Close SFU service
-  sfuService.close().then(() => {
-    logger.info('SFU service closed');
-    
-    // Close all socket connections
-    io.close(() => {
-      logger.info('All socket connections closed');
-      
-      // Close HTTP server
-      httpServer.close(() => {
-        logger.info('HTTP server closed');
-        
-        // Disconnect from database
-        database.disconnect().then(() => {
-          logger.info('Database connection closed');
-          process.exit(0);
-        }).catch((error) => {
-          logger.error('Error closing database connection:', error);
-          process.exit(1);
-        });
-      });
-    });
-  }).catch((error) => {
-    logger.error('Error closing SFU service:', error);
-    process.exit(1);
-  });
-
-  // Force shutdown after 15 seconds
-  setTimeout(() => {
-    logger.error('Force shutting down signaling server');
-    process.exit(1);
-  }, 15000);
-};
-
-process.on('SIGTERM', gracefulShutdown);
-process.on('SIGINT', gracefulShutdown);
-
-/**
- * Start server
- */
-async function startServer() {
+// Connect to database and start server
+async function startSignalingServer() {
   try {
-    // Connect to database
-    logger.info('Connecting to database...');
-    await database.connect();
+    // Connect to database (optional for signaling server)
+    try {
+      console.log('🔗 Connecting to database...');
+      const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/videocall-db';
+      await mongoose.connect(mongoUri);
+      console.log('✅ Database connected successfully!');
+    } catch (error) {
+      console.log('⚠️  Database connection failed, continuing without DB:', (error as Error).message);
+    }
 
-    // Start HTTP server
-    httpServer.listen(PORT, () => {
-      logger.info(`🚀 Signaling Server started successfully!`);
-      logger.info(`📍 Server running on port ${PORT}`);
-      logger.info(`🌍 Environment: ${NODE_ENV}`);
-      logger.info(`💾 Database: Connected`);
-      logger.info(`🔌 Socket.IO: Ready for connections`);
-      logger.info(`🔗 WebSocket Endpoint: ws://localhost:${PORT}`);
-      
-      if (NODE_ENV === 'development') {
-        logger.info(`📚 Supported events:`);
-        logger.info(`   room:join, room:leave, room:end-call`);
-        logger.info(`   webrtc:offer, webrtc:answer, webrtc:ice-candidate`);
-        logger.info(`   participant:update-media-state`);
-        logger.info(`   chat:message, chat:typing`);
-      }
+    // Start server
+    server.listen(PORT, () => {
+      console.log('🚀 WebRTC Signaling Server started successfully!');
+      console.log(`📍 Server running on http://localhost:${PORT}`);
+      console.log(`🌍 Environment: ${NODE_ENV}`);
+      console.log('📋 Available events:');
+      console.log('  📨 room:join - Join a video call room');
+      console.log('  📤 room:leave - Leave a video call room');
+      console.log('  📡 webrtc:offer/answer/ice-candidate - WebRTC signaling');
+      console.log('  🎵 media:toggle - Toggle audio/video');
+      console.log('  💬 chat:message - Send chat messages');
+      console.log('  📊 admin:get-room-stats - Get room statistics');
+    });
+
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('SIGTERM received, shutting down gracefully');
+      server.close(() => {
+        mongoose.connection.close();
+        process.exit(0);
+      });
     });
 
   } catch (error) {
-    logger.error('Failed to start signaling server:', error);
+    console.error('❌ Signaling server startup failed:', error);
     process.exit(1);
   }
 }
 
 // Start server if this file is run directly
 if (require.main === module) {
-  startServer().catch((error) => {
-    logger.error('Signaling server startup failed:', error);
-    process.exit(1);
-  });
+  console.log('🚀 Starting WebRTC Signaling Server...');
+  startSignalingServer();
 }
 
-export { httpServer, io, startServer };
-export default httpServer;
+export { io, startSignalingServer };
