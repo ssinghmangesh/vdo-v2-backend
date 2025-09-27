@@ -63,3 +63,34 @@
 {"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-27 19:43:25:4325"}
 {"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-27 19:43:25:4325"}
 {"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-27 19:49:28:4928","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 20:51:38:5138"}
+{"level":"warn","message":"Database disconnected","timestamp":"2025-09-27 20:51:48:5148"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 20:51:49:5149"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-27 22:06:58:658","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"User logged out","timestamp":"2025-09-27 22:07:03:73","userId":"68d7c227310089150052cb48"}
+{"ip":"::1","level":"error","message":"Application Error Invalid email or password","method":"POST","stack":"Error: Invalid email or password\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/api-server/controllers/auth.controller.ts:78:11","timestamp":"2025-09-27 22:17:47:1747","url":"/api/auth/login","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+{"ip":"::1","level":"error","message":"Application Error Invalid email or password","method":"POST","stack":"Error: Invalid email or password\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/api-server/controllers/auth.controller.ts:78:11","timestamp":"2025-09-27 22:20:38:2038","url":"/api/auth/login","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+{"ip":"::1","level":"error","message":"Application Error Invalid email or password","method":"POST","stack":"Error: Invalid email or password\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/api-server/controllers/auth.controller.ts:78:11","timestamp":"2025-09-27 22:20:41:2041","url":"/api/auth/login","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+{"ip":"::1","level":"error","message":"Application Error Invalid email or password","method":"POST","stack":"Error: Invalid email or password\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/api-server/controllers/auth.controller.ts:78:11","timestamp":"2025-09-27 22:20:47:2047","url":"/api/auth/login","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-27 22:20:57:2057","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"User logged out","timestamp":"2025-09-27 22:23:18:2318","userId":"68d7c227310089150052cb48"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-27 22:27:47:2747","userId":"68d7c227310089150052cb48"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-27 22:49:41:4941","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"User logged out","timestamp":"2025-09-27 22:52:26:5226","userId":"68d7c227310089150052cb48"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-27 22:52:43:5243","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:26:59:2659"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:26:59:2659"}
+{"level":"warn","message":"Database disconnected","timestamp":"2025-09-27 23:27:09:279"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:27:10:2710"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:32:38:3238"}
+{"level":"warn","message":"Database disconnected","timestamp":"2025-09-27 23:33:55:3355"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:33:56:3356"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:38:58:3858"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:38:58:3858"}
+{"level":"warn","message":"Database disconnected","timestamp":"2025-09-27 23:40:48:4048"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:40:48:4048"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:44:04:444"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:44:04:444"}
+{"level":"warn","message":"Database disconnected","timestamp":"2025-09-27 23:44:14:4414"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:44:14:4414"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-27 23:52:26:5226","userId":"68d7c227310089150052cb48"}
