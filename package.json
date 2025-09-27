@@ -5,7 +5,7 @@
   "main": "dist/api-server/index.js",
   "scripts": {
     "dev:api": "nodemon --exec ts-node src/api-server/working-server.ts",
-    "dev:signaling": "nodemon --exec ts-node src/signaling-server/index.ts",
+    "dev:signaling": "nodemon --exec ts-node src/signaling-server/working-signaling-server.ts",
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:signaling\"",
     "build": "tsc",
     "start:api": "node dist/api-server/index.js",
