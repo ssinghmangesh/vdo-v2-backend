@@ -1,0 +1,49 @@
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-27 19:17:06:176"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-27 19:18:10:1810"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-27 19:18:10:1810"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-27 19:18:10:1810"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-27 19:18:10:1810"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-27 19:18:12:1812"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-27 19:18:12:1812"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-27 19:18:54:1854"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-27 19:18:54:1854"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-27 19:18:55:1855"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-27 19:19:37:1937"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-27 19:19:44:1944"}

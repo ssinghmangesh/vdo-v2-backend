@@ -34,7 +34,13 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
   });
 
   // Prepare response (exclude password)
-  const userResponse = user.toJSON() as unknown as User;
+  const userResponse: User = {
+    _id: user._id.toString(),
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
 
   logger.info('User registered successfully', { 
     userId: user._id, 
@@ -80,7 +86,13 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   });
 
   // Prepare response (exclude password)
-  const userResponse = user.toJSON() as unknown as User;
+  const userResponse: User = {
+    _id: user._id.toString(),
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
 
   logger.info('User logged in successfully', { 
     userId: user._id, 
@@ -129,7 +141,13 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response) => 
   logger.info('Token refreshed successfully', { userId: user._id });
 
   const response: AuthResponse = {
-    user: user.toJSON(),
+    user: {
+      _id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    },
     token: newTokenPair.accessToken,
     expiresIn: jwtService.getAccessTokenExpiryDuration(),
   };
@@ -158,7 +176,13 @@ export const getProfile = asyncHandler(async (req: Request, res: Response) => {
   res.json({
     success: true,
     message: 'Profile retrieved successfully',
-    data: user.toJSON(),
+    data: {
+      _id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    },
   });
 });
 
@@ -210,7 +234,13 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
   res.json({
     success: true,
     message: 'Profile updated successfully',
-    data: updatedUser.toJSON(),
+    data: {
+      _id: updatedUser._id.toString(),
+      name: updatedUser.name,
+      email: updatedUser.email,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    },
   });
 });
 

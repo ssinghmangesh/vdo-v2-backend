@@ -146,7 +146,6 @@ const videoCallSchema = new Schema<VideoCallDocument>({
 });
 
 // Indexes
-videoCallSchema.index({ roomId: 1 }, { unique: true });
 videoCallSchema.index({ hostId: 1, createdAt: -1 });
 videoCallSchema.index({ status: 1, scheduledAt: 1 });
 videoCallSchema.index({ type: 1, status: 1 });

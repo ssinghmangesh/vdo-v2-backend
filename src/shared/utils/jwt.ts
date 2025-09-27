@@ -41,7 +41,7 @@ class JWTService {
   generateAccessToken(payload: Omit<JwtPayload, 'iat' | 'exp'>): string {
     try {
       return jwt.sign(payload, this.accessTokenSecret, {
-        expiresIn: this.accessTokenExpiry,
+        expiresIn: this.accessTokenExpiry as jwt.SignOptions['expiresIn'],
         issuer: 'videocall-api',
         audience: 'videocall-client',
       });
@@ -57,7 +57,7 @@ class JWTService {
   generateRefreshToken(payload: Omit<JwtPayload, 'iat' | 'exp'>): string {
     try {
       return jwt.sign(payload, this.refreshTokenSecret, {
-        expiresIn: this.refreshTokenExpiry,
+        expiresIn: this.refreshTokenExpiry as jwt.SignOptions['expiresIn'],
         issuer: 'videocall-api',
         audience: 'videocall-client',
       });
