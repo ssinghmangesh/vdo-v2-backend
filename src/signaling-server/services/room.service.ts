@@ -6,7 +6,8 @@ import {
   CallSettings,
   User,
   AppError,
-  ErrorCodes 
+  ErrorCodes, 
+  ParticipantRole
 } from '../../shared/types';
 import { VideoCallModel } from '../../api-server/models/video-call.model';
 import { UserModel } from '../../api-server/models/user.model';
@@ -91,7 +92,13 @@ export class RoomService {
           const decoded = jwtService.verifyAccessToken(token);
           const dbUser = await UserModel.findById(decoded.userId);
           if (dbUser) {
-            user = dbUser.toJSON();
+            user = {
+              _id: dbUser._id.toString(),
+              name: dbUser.name,
+              email: dbUser.email,
+              createdAt: dbUser.createdAt,
+              updatedAt: dbUser.updatedAt,
+            };
           }
         } catch (error) {
           // Token invalid, treat as guest if allowed
@@ -142,7 +149,7 @@ export class RoomService {
           roomId,
           callId: call._id.toString(),
           participants: new Map(),
-          hostId: call.hostId._id.toString(),
+          hostId: call.hostId.toString(),
           createdAt: new Date(),
           settings: call.settings,
         };
@@ -186,11 +193,11 @@ export class RoomService {
       if (!isGuest) {
         try {
           const existingParticipant = call.participants.find(p => 
-            p.userId._id.toString() === user!._id
+            p.userId.toString() === user!._id
           );
 
           if (!existingParticipant) {
-            await call.addParticipant(user._id, 'participant');
+            await call.addParticipant(user._id, ParticipantRole.PARTICIPANT);
           } else {
             await call.updateParticipantStatus(user._id, true, socket.id);
           }

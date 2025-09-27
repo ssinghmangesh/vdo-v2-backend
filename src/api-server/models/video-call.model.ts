@@ -1,9 +1,25 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { VideoCall, CallStatus, CallType, ParticipantRole, CallSettings, Participant } from '../../shared/types';
+import { CallStatus, CallType, ParticipantRole, CallSettings, Participant } from '../../shared/types';
 
-export interface VideoCallDocument extends Omit<VideoCall, '_id' | 'host'>, Document {
+export interface VideoCallDocument extends Document {
+  title: string;
+  description?: string;
   hostId: string;
+  participants: Participant[];
+  scheduledAt?: Date;
+  startedAt?: Date;
+  endedAt?: Date;
+  duration: number;
+  status: CallStatus;
+  type: CallType;
+  settings: CallSettings;
+  roomId: string;
+  joinLink: string;
+  passcode?: string;
+  maxParticipants: number;
+  recordingEnabled: boolean;
+  recordingUrl?: string;
   generateJoinLink(): string;
   generateRoomId(): string;
   addParticipant(userId: string, role?: ParticipantRole): Promise<VideoCallDocument>;
@@ -15,7 +31,13 @@ export interface VideoCallDocument extends Omit<VideoCall, '_id' | 'host'>, Docu
   getDuration(): number;
 }
 
-const participantSchema = new Schema<Participant>({
+const mediaStateSchema = new mongoose.Schema({
+  videoEnabled: { type: Boolean, default: true },
+  audioEnabled: { type: Boolean, default: true },
+  screenShareEnabled: { type: Boolean, default: true },
+});
+
+const participantSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true
@@ -29,19 +51,23 @@ const participantSchema = new Schema<Participant>({
   },
   role: {
     type: String,
-    enum: Object.values(ParticipantRole),
-    default: ParticipantRole.PARTICIPANT
+    enum: ['host', 'moderator', 'participant'],
+    default: 'participant'
   },
   isConnected: {
     type: Boolean,
     default: false
+  },
+  mediaState: {
+    type: mediaStateSchema,
+    default: () => ({})
   },
   connectionId: {
     type: String
   }
 }, { _id: false });
 
-const callSettingsSchema = new Schema<CallSettings>({
+const callSettingsSchema = new mongoose.Schema({
   videoEnabled: { type: Boolean, default: true },
   audioEnabled: { type: Boolean, default: true },
   screenShareEnabled: { type: Boolean, default: true },
@@ -55,7 +81,7 @@ const callSettingsSchema = new Schema<CallSettings>({
   autoAdmitGuests: { type: Boolean, default: true }
 }, { _id: false });
 
-const videoCallSchema = new Schema<VideoCallDocument>({
+const videoCallSchemaDefinition = {
   title: {
     type: String,
     required: [true, 'Call title is required'],
@@ -93,14 +119,14 @@ const videoCallSchema = new Schema<VideoCallDocument>({
   },
   status: {
     type: String,
-    enum: Object.values(CallStatus),
-    default: CallStatus.SCHEDULED
+    enum: ['scheduled', 'waiting', 'live', 'ended', 'cancelled'],
+    default: 'scheduled'
   },
   type: {
     type: String,
-    enum: Object.values(CallType),
+    enum: ['public', 'private', 'invited_only'],
     required: [true, 'Call type is required'],
-    default: CallType.PUBLIC
+    default: 'public'
   },
   settings: {
     type: callSettingsSchema,
@@ -134,16 +160,20 @@ const videoCallSchema = new Schema<VideoCallDocument>({
   recordingUrl: {
     type: String
   }
-}, {
+};
+
+const videoCallSchemaOptions = {
   timestamps: true,
   toJSON: {
-    transform: function(doc, ret) {
+    transform: function(doc: any, ret: any) {
       ret._id = ret._id.toString();
       delete ret.__v;
       return ret;
     }
   }
-});
+};
+
+const videoCallSchema = new mongoose.Schema(videoCallSchemaDefinition as any, videoCallSchemaOptions);
 
 // Indexes
 videoCallSchema.index({ hostId: 1, createdAt: -1 });
@@ -154,19 +184,20 @@ videoCallSchema.index({ 'participants.userId': 1 });
 // Pre-save middleware
 videoCallSchema.pre('save', function(next) {
   if (this.isNew || this.isModified('roomId')) {
-    this.joinLink = this.generateJoinLink();
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    this.joinLink = `${baseUrl}/room/${this.roomId}`;
   }
   
   // Auto-add host as participant if not already added
   if (this.isNew) {
-    const hostExists = this.participants.some(p => p.userId.toString() === this.hostId.toString());
+    const hostExists = this.participants.some((p: any) => p.userId.toString() === this.hostId.toString());
     if (!hostExists) {
       this.participants.push({
         userId: this.hostId,
-        role: ParticipantRole.HOST,
+        role: 'host',
         joinedAt: new Date(),
         isConnected: false
-      } as Participant);
+      });
     }
   }
   
@@ -185,8 +216,8 @@ videoCallSchema.methods.generateRoomId = function(): string {
 };
 
 // Add participant
-videoCallSchema.methods.addParticipant = async function(userId: string, role: ParticipantRole = ParticipantRole.PARTICIPANT) {
-  const existingParticipant = this.participants.find(p => p.userId.toString() === userId);
+videoCallSchema.methods.addParticipant = async function(userId: string, role: string = 'participant') {
+  const existingParticipant = this.participants.find((p: any) => p.userId.toString() === userId);
   
   if (existingParticipant) {
     // Update existing participant
@@ -211,7 +242,7 @@ videoCallSchema.methods.addParticipant = async function(userId: string, role: Pa
 
 // Remove participant
 videoCallSchema.methods.removeParticipant = async function(userId: string) {
-  const participantIndex = this.participants.findIndex(p => p.userId.toString() === userId);
+  const participantIndex = this.participants.findIndex((p: any) => p.userId.toString() === userId);
   
   if (participantIndex !== -1) {
     this.participants[participantIndex].leftAt = new Date();
@@ -224,7 +255,7 @@ videoCallSchema.methods.removeParticipant = async function(userId: string) {
 
 // Update participant status
 videoCallSchema.methods.updateParticipantStatus = async function(userId: string, isConnected: boolean, connectionId?: string) {
-  const participant = this.participants.find(p => p.userId.toString() === userId);
+  const participant = this.participants.find((p: any) => p.userId.toString() === userId);
   
   if (participant) {
     participant.isConnected = isConnected;
@@ -243,26 +274,26 @@ videoCallSchema.methods.updateParticipantStatus = async function(userId: string,
 // Check if user can join
 videoCallSchema.methods.canUserJoin = async function(userId?: string) {
   // Check if call is ended or cancelled
-  if (this.status === CallStatus.ENDED || this.status === CallStatus.CANCELLED) {
+  if (this.status === 'ended' || this.status === 'cancelled') {
     return { canJoin: false, reason: 'Call has ended' };
   }
   
   // Check if call is full
-  const activeParticipants = this.participants.filter(p => !p.leftAt).length;
+  const activeParticipants = this.participants.filter((p: any) => !p.leftAt).length;
   if (activeParticipants >= this.maxParticipants) {
     return { canJoin: false, reason: 'Call is full' };
   }
   
   // Check call type permissions
-  if (this.type === CallType.PRIVATE && userId) {
-    const isParticipant = this.participants.some(p => p.userId.toString() === userId);
+  if (this.type === 'private' && userId) {
+    const isParticipant = this.participants.some((p: any) => p.userId.toString() === userId);
     if (!isParticipant) {
       return { canJoin: false, reason: 'You are not invited to this call' };
     }
   }
   
-  if (this.type === CallType.INVITED_ONLY && userId) {
-    const isInvited = this.participants.some(p => p.userId.toString() === userId);
+  if (this.type === 'invited_only' && userId) {
+    const isInvited = this.participants.some((p: any) => p.userId.toString() === userId);
     if (!isInvited) {
       return { canJoin: false, reason: 'You are not invited to this call' };
     }
@@ -273,8 +304,8 @@ videoCallSchema.methods.canUserJoin = async function(userId?: string) {
 
 // Start call
 videoCallSchema.methods.startCall = async function() {
-  if (this.status === CallStatus.SCHEDULED || this.status === CallStatus.WAITING) {
-    this.status = CallStatus.LIVE;
+  if (this.status === 'scheduled' || this.status === 'waiting') {
+    this.status = 'live';
     this.startedAt = new Date();
   }
   return this.save();
@@ -282,8 +313,8 @@ videoCallSchema.methods.startCall = async function() {
 
 // End call
 videoCallSchema.methods.endCall = async function() {
-  if (this.status === CallStatus.LIVE || this.status === CallStatus.WAITING) {
-    this.status = CallStatus.ENDED;
+  if (this.status === 'live' || this.status === 'waiting') {
+    this.status = 'ended';
     this.endedAt = new Date();
     
     // Calculate duration
@@ -292,7 +323,7 @@ videoCallSchema.methods.endCall = async function() {
     }
     
     // Mark all participants as disconnected
-    this.participants.forEach(participant => {
+    this.participants.forEach((participant: any) => {
       if (participant.isConnected) {
         participant.isConnected = false;
         participant.leftAt = this.endedAt;
@@ -308,7 +339,7 @@ videoCallSchema.methods.getDuration = function(): number {
   if (this.startedAt && this.endedAt) {
     return Math.round((this.endedAt.getTime() - this.startedAt.getTime()) / (1000 * 60));
   }
-  if (this.startedAt && this.status === CallStatus.LIVE) {
+  if (this.startedAt && this.status === 'live') {
     return Math.round((Date.now() - this.startedAt.getTime()) / (1000 * 60));
   }
   return 0;
@@ -325,7 +356,7 @@ videoCallSchema.statics.findActiveCallsForUser = function(userId: string) {
       { hostId: userId },
       { 'participants.userId': userId }
     ],
-    status: { $in: [CallStatus.SCHEDULED, CallStatus.WAITING, CallStatus.LIVE] }
+    status: { $in: ['scheduled', 'waiting', 'live'] }
   }).populate('hostId', 'name email avatar').populate('participants.userId', 'name email avatar');
 };
 

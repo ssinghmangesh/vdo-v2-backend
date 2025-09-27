@@ -47,3 +47,19 @@
 {"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-27 19:19:44:1944"}
 {"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-27 19:19:44:1944"}
 {"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-27 19:19:44:1944"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-27 19:21:17:2117"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-27 19:43:25:4325"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-27 19:43:25:4325"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-27 19:49:28:4928","userId":"68d7c227310089150052cb48"}
