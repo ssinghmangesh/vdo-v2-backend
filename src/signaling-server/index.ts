@@ -107,7 +107,7 @@ io.on('connection', (socket) => {
   /**
    * Additional WebRTC Events
    */
-  socket.on('webrtc:connection-state', (data: { to: string; state: RTCPeerConnectionState }) => {
+  socket.on('webrtc:connection-state', (data: { to: string; state: string }) => {
     webrtcService.handleConnectionStateChange(socket, data);
   });
 
@@ -123,7 +123,7 @@ io.on('connection', (socket) => {
     webrtcService.handleScreenShare(socket, data);
   });
 
-  socket.on('webrtc:get-stats', (callback) => {
+  socket.on('webrtc:get-stats', (callback: (stats: any) => void) => {
     webrtcService.handleGetStats(socket, callback);
   });
 
@@ -149,7 +149,7 @@ io.on('connection', (socket) => {
     await sfuService.connectTransport(socket, data);
   });
 
-  socket.on('sfu:produce', async (data) => {
+  socket.on('sfu:produce', async (data: { kind: 'audio' | 'video'; rtpParameters: any }) => {
     logger.debug('SFU produce request', { socketId: socket.id, data });
     await sfuService.produce(socket, data);
   });
@@ -223,17 +223,17 @@ io.on('connection', (socket) => {
   /**
    * Admin/Debug Events
    */
-  socket.on('admin:get-room-stats', (data: { roomId: string }, callback) => {
+  socket.on('admin:get-room-stats', (data: { roomId: string }, callback: (result: any) => void) => {
     try {
       const stats = roomService.getRoomStats(data.roomId);
-      callback?.({ success: true, data: stats });
+      callback({ success: true, data: stats });
     } catch (error) {
       logger.error('Error getting room stats:', error);
-      callback?.({ success: false, error: 'Failed to get room stats' });
+      callback({ success: false, error: 'Failed to get room stats' });
     }
   });
 
-  socket.on('admin:get-all-rooms', (callback) => {
+  socket.on('admin:get-all-rooms', (callback: (result: any) => void) => {
     try {
       const rooms = roomService.getAllRooms().map(room => ({
         roomId: room.roomId,
@@ -243,10 +243,10 @@ io.on('connection', (socket) => {
         connectedCount: Array.from(room.participants.values()).filter(p => p.isConnected).length,
         createdAt: room.createdAt,
       }));
-      callback?.({ success: true, data: rooms });
+      callback({ success: true, data: rooms });
     } catch (error) {
       logger.error('Error getting all rooms:', error);
-      callback?.({ success: false, error: 'Failed to get rooms' });
+      callback({ success: false, error: 'Failed to get rooms' });
     }
   });
 
@@ -264,7 +264,7 @@ io.on('connection', (socket) => {
     await sfuService.leaveRoom(socket);
   });
 
-  socket.on('connect_error', (error) => {
+  socket.on('connect_error' as any, (error: Error) => {
     logger.error('Socket connection error:', {
       socketId: socket.id,
       error: error.message,

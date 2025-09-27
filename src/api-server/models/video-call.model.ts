@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { VideoCall, CallStatus, CallType, ParticipantRole, CallSettings, Participant } from '../../shared/types';
 
 export interface VideoCallDocument extends Omit<VideoCall, '_id' | 'host'>, Document {
-  hostId: Types.ObjectId;
+  hostId: string;
   generateJoinLink(): string;
   generateRoomId(): string;
   addParticipant(userId: string, role?: ParticipantRole): Promise<VideoCallDocument>;
@@ -17,8 +17,7 @@ export interface VideoCallDocument extends Omit<VideoCall, '_id' | 'host'>, Docu
 
 const participantSchema = new Schema<Participant>({
   userId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true
   },
   joinedAt: {
@@ -69,8 +68,7 @@ const videoCallSchema = new Schema<VideoCallDocument>({
     maxlength: [1000, 'Description cannot exceed 1000 characters']
   },
   hostId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: [true, 'Host is required']
   },
   participants: [participantSchema],
@@ -202,7 +200,7 @@ videoCallSchema.methods.addParticipant = async function(userId: string, role: Pa
     }
     
     this.participants.push({
-      userId: new Types.ObjectId(userId),
+      userId: userId,
       role,
       joinedAt: new Date(),
       isConnected: false

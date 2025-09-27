@@ -36,7 +36,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     }
 
     // Add user to request object
-    req.user = user.toJSON();
+    req.user = user.toJSON() as unknown as User;
     
     logger.debug('User authenticated', { userId: user._id, email: user.email });
     next();
@@ -72,7 +72,7 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
         const user = await UserModel.findById(decoded.userId).select('-password');
         
         if (user) {
-          req.user = user.toJSON();
+          req.user = user.toJSON() as unknown as User;
           logger.debug('Optional auth - user authenticated', { userId: user._id });
         }
       } catch (error) {

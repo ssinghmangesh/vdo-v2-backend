@@ -26,7 +26,7 @@ export const globalErrorHandler = (
   if (error instanceof AppError) {
     statusCode = error.statusCode;
     message = error.message;
-    code = error.code;
+    code = error.code as ErrorCodes;
   } else if (error instanceof ZodError) {
     // Validation errors
     statusCode = 400;
@@ -198,7 +198,7 @@ export const formatValidationError = (error: ZodError) => {
     errors: error.errors.map((err) => ({
       field: err.path.join('.'),
       message: err.message,
-      value: err.input,
+      value: (err as any).input || 'N/A',
     })),
   };
 };

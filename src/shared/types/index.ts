@@ -202,6 +202,11 @@ export interface ClientToServerEvents {
   'webrtc:answer': (data: { to: string; answer: RTCSessionDescriptionInit }) => void;
   'webrtc:ice-candidate': (data: { to: string; candidate: RTCIceCandidateInit }) => void;
   'webrtc:get-ice-servers': () => void;
+  'webrtc:connection-state': (data: { to: string; state: string }) => void;
+  'webrtc:renegotiation-needed': (data: { to: string }) => void;
+  'webrtc:data-channel': (data: { to?: string; message: any; type: string }) => void;
+  'webrtc:screen-share': (data: { enabled: boolean; to?: string }) => void;
+  'webrtc:get-stats': (callback: (stats: any) => void) => void;
   'participant:update-media-state': (data: { videoEnabled: boolean; audioEnabled: boolean; screenShareEnabled: boolean }) => void;
   'room:end-call': (data: { roomId: string }) => void;
   'chat:message': (data: { message: string; to?: string }) => void;
@@ -210,10 +215,13 @@ export interface ClientToServerEvents {
   'sfu:join-room': (data: { roomId: string; rtpCapabilities: any; participant: ParticipantConnection }) => void;
   'sfu:create-transport': (data: { direction: 'send' | 'recv' }) => void;
   'sfu:connect-transport': (data: { dtlsParameters: any }) => void;
-  'sfu:produce': (data: { kind: string; rtpParameters: any }) => void;
+  'sfu:produce': (data: { kind: 'audio' | 'video'; rtpParameters: any }) => void;
   'sfu:consume': (data: { producerId: string; rtpCapabilities: any }) => void;
   'sfu:resume-consumer': (data: { consumerId: string }) => void;
   'sfu:pause-producer': (data: { pause: boolean }) => void;
+  // Admin Events
+  'admin:get-room-stats': (data: { roomId: string }, callback: (result: any) => void) => void;
+  'admin:get-all-rooms': (callback: (result: any) => void) => void;
 }
 
 // Error Types

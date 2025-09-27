@@ -157,7 +157,7 @@ export class WebRTCService {
    */
   handleConnectionStateChange(socket: Socket, data: {
     to: string;
-    state: RTCPeerConnectionState;
+    state: string;
   }): void {
     try {
       const { to, state } = data;

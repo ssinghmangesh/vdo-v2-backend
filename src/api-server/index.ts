@@ -161,8 +161,10 @@ app.use(globalErrorHandler);
 async function startServer() {
   try {
     // Connect to database
+    console.log('🔗 Connecting to database...');
     logger.info('Connecting to database...');
     await database.connect();
+    console.log('✅ Database connected successfully!');
 
     // Start server
     const server = app.listen(PORT, () => {
@@ -218,7 +220,9 @@ process.on('uncaughtException', (error) => {
 
 // Start server if this file is run directly
 if (require.main === module) {
+  console.log('🚀 Starting API server...');
   startServer().catch((error) => {
+    console.error('❌ Server startup failed:', error);
     logger.error('Server startup failed:', error);
     process.exit(1);
   });

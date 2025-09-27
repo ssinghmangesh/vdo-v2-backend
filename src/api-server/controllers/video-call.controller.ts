@@ -40,7 +40,7 @@ export const createCall = asyncHandler(async (req: Request, res: Response) => {
   const callData = {
     title,
     description,
-    hostId: req.user._id,
+    hostId: req.user._id.toString(),
     scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
     type: type || CallType.PUBLIC,
     settings: {
@@ -78,7 +78,7 @@ export const createCall = asyncHandler(async (req: Request, res: Response) => {
 
   logger.info('Video call created', {
     callId: call._id,
-    hostId: req.user._id,
+    hostId: req.user._id.toString(),
     title: call.title,
     type: call.type,
   });
@@ -113,8 +113,8 @@ export const getCalls = asyncHandler(async (req: Request, res: Response) => {
   // Build query
   const query: any = {
     $or: [
-      { hostId: req.user._id },
-      { 'participants.userId': req.user._id }
+      { hostId: req.user._id.toString() },
+      { 'participants.userId': req.user._id.toString() }
     ]
   };
 
@@ -201,8 +201,8 @@ export const getCallById = asyncHandler(async (req: Request, res: Response) => {
 
   // Check if user has access to this call
   if (req.user) {
-    const hasAccess = call.hostId._id.toString() === req.user._id ||
-      call.participants.some(p => p.userId._id.toString() === req.user._id);
+    const hasAccess = (call.hostId as any).toString() === req.user._id.toString() ||
+      call.participants.some(p => (p.userId as any).toString() === req.user._id.toString());
 
     if (!hasAccess && call.type !== CallType.PUBLIC) {
       throw new AppError('Access denied', 403, ErrorCodes.UNAUTHORIZED);
@@ -250,8 +250,8 @@ export const getCallByRoomId = asyncHandler(async (req: Request, res: Response) 
       });
     }
 
-    const hasAccess = call.hostId._id.toString() === req.user._id ||
-      call.participants.some(p => p.userId._id.toString() === req.user._id);
+    const hasAccess = (call.hostId as any).toString() === req.user._id.toString() ||
+      call.participants.some(p => (p.userId as any).toString() === req.user._id.toString());
 
     if (!hasAccess && call.type === CallType.INVITED_ONLY) {
       throw new AppError('You are not invited to this call', 403, ErrorCodes.UNAUTHORIZED);
@@ -286,7 +286,7 @@ export const updateCall = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Check if user is the host
-  if (call.hostId.toString() !== req.user._id) {
+  if (call.hostId.toString() !== req.user._id.toString().toString()) {
     throw new AppError('Only the host can update the call', 403, ErrorCodes.HOST_REQUIRED);
   }
 
@@ -308,7 +308,7 @@ export const updateCall = asyncHandler(async (req: Request, res: Response) => {
 
   logger.info('Video call updated', {
     callId: updatedCall!._id,
-    hostId: req.user._id,
+    hostId: req.user._id.toString(),
     changes: Object.keys(updateData),
   });
 
@@ -339,7 +339,7 @@ export const deleteCall = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Check if user is the host
-  if (call.hostId.toString() !== req.user._id) {
+  if (call.hostId.toString() !== req.user._id.toString().toString()) {
     throw new AppError('Only the host can delete the call', 403, ErrorCodes.HOST_REQUIRED);
   }
 
@@ -352,7 +352,7 @@ export const deleteCall = asyncHandler(async (req: Request, res: Response) => {
 
   logger.info('Video call deleted', {
     callId: id,
-    hostId: req.user._id,
+    hostId: req.user._id.toString(),
     title: call.title,
   });
 
@@ -401,6 +401,8 @@ export const joinCall = asyncHandler(async (req: Request, res: Response) => {
       name: guestName,
       email: `${userId}@guest.temp`,
       avatar: `https://ui-avatars.com/api/?name=${guestName}&background=random`,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   }
 
@@ -417,7 +419,7 @@ export const joinCall = asyncHandler(async (req: Request, res: Response) => {
     );
 
     if (!existingParticipant) {
-      await call.addParticipant(req.user._id, ParticipantRole.PARTICIPANT);
+      await call.addParticipant(req.user._id.toString(), ParticipantRole.PARTICIPANT);
       await call.populate('participants.userId', 'name email avatar');
     }
   }
@@ -465,7 +467,7 @@ export const endCall = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Check if user is the host
-  if (call.hostId.toString() !== req.user._id) {
+  if (call.hostId.toString() !== req.user._id.toString().toString()) {
     throw new AppError('Only the host can end the call', 403, ErrorCodes.HOST_REQUIRED);
   }
 
@@ -473,7 +475,7 @@ export const endCall = asyncHandler(async (req: Request, res: Response) => {
 
   logger.info('Video call ended', {
     callId: call._id,
-    hostId: req.user._id,
+    hostId: req.user._id.toString(),
     duration: call.getDuration(),
   });
 
@@ -510,8 +512,8 @@ export const getCallStats = asyncHandler(async (req: Request, res: Response) => 
   }
 
   // Check if user has access
-  const hasAccess = call.hostId._id.toString() === req.user._id ||
-    call.participants.some(p => p.userId._id.toString() === req.user._id);
+  const hasAccess = call.hostId._id.toString() === req.user._id.toString() ||
+    call.participants.some(p => p.userId._id.toString() === req.user._id.toString());
 
   if (!hasAccess) {
     throw new AppError('Access denied', 403, ErrorCodes.UNAUTHORIZED);

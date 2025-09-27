@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AppError, ErrorCodes, AuthResponse } from '../../shared/types';
+import { AppError, ErrorCodes, AuthResponse, User } from '../../shared/types';
 import { UserModel } from '../models/user.model';
 import { jwtService } from '../../shared/utils/jwt';
 import { logger } from '../../shared/utils/logger';
@@ -28,13 +28,13 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
 
   // Generate tokens
   const tokenPair = jwtService.generateTokenPair({
-    userId: user._id.toString(),
+    userId: (user._id as any).toString(),
     email: user.email,
     name: user.name,
   });
 
   // Prepare response (exclude password)
-  const userResponse = user.toJSON();
+  const userResponse = user.toJSON() as unknown as User;
 
   logger.info('User registered successfully', { 
     userId: user._id, 
@@ -74,13 +74,13 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   // Generate tokens
   const tokenPair = jwtService.generateTokenPair({
-    userId: user._id.toString(),
+    userId: (user._id as any).toString(),
     email: user.email,
     name: user.name,
   });
 
   // Prepare response (exclude password)
-  const userResponse = user.toJSON();
+  const userResponse = user.toJSON() as unknown as User;
 
   logger.info('User logged in successfully', { 
     userId: user._id, 
@@ -121,7 +121,7 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response) => 
 
   // Generate new token pair
   const newTokenPair = jwtService.generateTokenPair({
-    userId: user._id.toString(),
+    userId: (user._id as any).toString(),
     email: user.email,
     name: user.name,
   });

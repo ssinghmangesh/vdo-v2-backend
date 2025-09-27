@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { AppError, ErrorCodes } from '../types';
 import { logger } from './logger';
 
