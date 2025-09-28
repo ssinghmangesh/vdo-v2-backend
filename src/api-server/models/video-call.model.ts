@@ -139,8 +139,7 @@ const videoCallSchemaDefinition = {
     default: () => uuidv4().replace(/-/g, '').substring(0, 12).toUpperCase()
   },
   joinLink: {
-    type: String,
-    required: true
+    type: String
   },
   passcode: {
     type: String,

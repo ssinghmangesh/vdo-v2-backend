@@ -10,8 +10,6 @@ import {
   ParticipantRole
 } from '../../shared/types';
 import { VideoCallModel } from '../../api-server/models/video-call.model';
-import { UserModel } from '../../api-server/models/user.model';
-import { jwtService } from '../../shared/utils/jwt';
 
 export class RoomService {
   private rooms = new Map<string, RoomState>();
@@ -58,16 +56,166 @@ export class RoomService {
   }
 
   /**
+   * Create a new room
+   */
+  async createRoom(socket: Socket, data: any): Promise<void> {
+    try {
+      // Get user from authenticated socket data
+      const authenticatedUser = socket.data.user;
+
+      console.log('👤 Creating room for user:', { 
+        userId: authenticatedUser._id, 
+        email: authenticatedUser.email,
+        name: authenticatedUser.name 
+      });
+
+      // Extract room data from frontend
+      const { 
+        name: title, 
+        isPrivate, 
+        maxParticipants = 10,
+        id: frontendRoomId,
+        status 
+      } = data;
+
+      let userInfo = {
+        _id: authenticatedUser._id,
+        name: authenticatedUser.name,
+        email: authenticatedUser.email,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Use frontend-provided room ID or generate unique one
+      const roomId = frontendRoomId || `room_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      console.log('🏠 Creating room:', { roomId, title, maxParticipants, isPrivate });
+
+      // Create call in database
+      const call = new VideoCallModel({
+        roomId,
+        hostId: userInfo._id,
+        title: title || `${userInfo.name}'s Meeting`,
+        description: '',
+        settings: {
+          maxParticipants: maxParticipants || 10,
+          allowGuests: !isPrivate,
+          requireApproval: isPrivate || false,
+          recordCall: false,
+        },
+        status,
+        participants: [{
+          userId: userInfo._id,
+          joinedAt: new Date(),
+          isActive: true,
+          role: ParticipantRole.HOST,
+        }],
+      });
+
+      await call.save();
+
+      // Generate peer ID for host
+      const peerId = `peer_${socket.id}_${Date.now()}`;
+
+      // Create room state
+      const room: RoomState = {
+        roomId,
+        callId: call._id.toString(),
+        hostId: userInfo._id,
+        participants: new Map(),
+        settings: call.settings,
+        createdAt: new Date(),
+      };
+
+      // Create host participant
+      const hostParticipant: ParticipantConnection = {
+        peerId,
+        userId: userInfo._id,
+        socketId: socket.id,
+        user: userInfo,
+        mediaState: {
+          videoEnabled: true,
+          audioEnabled: true,
+          screenShareEnabled: false,
+        },
+        isConnected: true,
+        joinedAt: new Date(),
+      };
+
+      // Add host to room
+      room.participants.set(peerId, hostParticipant);
+
+      // Store room and mappings
+      this.rooms.set(roomId, room);
+      this.socketToRoom.set(socket.id, roomId);
+      this.socketToUser.set(socket.id, userInfo._id);
+
+      // Join Socket.IO room
+      await socket.join(roomId);
+
+      console.log('✅ Room created successfully:', { roomId, hostId: userInfo._id });
+
+      // Prepare room data for frontend (matching Room interface)
+      const roomResponse = {
+        id: roomId,
+        name: title || `${userInfo.name}'s Meeting`,
+        participants: [userInfo],
+        createdAt: new Date(),
+        hostId: userInfo._id,
+        isPrivate: isPrivate || false,
+        maxParticipants: maxParticipants || 10,
+      };
+
+      // Notify host that room was created
+      socket.emit('room:created', roomResponse);
+
+      logger.info('Room created successfully', {
+        roomId,
+        callId: call._id.toString(),
+        hostId: userInfo._id,
+        hostName: userInfo.name,
+        title: title || `${userInfo.name}'s Meeting`,
+        isPrivate: isPrivate || false,
+        maxParticipants: maxParticipants || 10,
+      });
+
+    } catch (error) {
+      console.error('❌ Error creating room:', error);
+      logger.error('Error creating room:', error);
+      
+      if (error instanceof AppError) {
+        socket.emit('error', {
+          message: error.message,
+          code: error.code,
+        });
+      } else {
+        socket.emit('error', {
+          message: 'Failed to create room',
+          code: ErrorCodes.INTERNAL_ERROR,
+        });
+      }
+    }
+  }
+
+  /**
    * Join a room
    */
   async joinRoom(socket: Socket, data: {
     roomId: string;
-    token?: string;
     passcode?: string;
-    guestName?: string;
   }): Promise<void> {
     try {
-      const { roomId, token, passcode, guestName } = data;
+      // Get user from authenticated socket data
+      const authenticatedUser = socket.data.user;
+
+      console.log('👤 User joining room:', { 
+        userId: authenticatedUser._id, 
+        email: authenticatedUser.email,
+        name: authenticatedUser.name,
+        roomId: data.roomId
+      });
+
+      const { roomId, passcode } = data;
 
       // Find the call in database
       const call = await VideoCallModel.findOne({ roomId })
@@ -83,55 +231,17 @@ export class RoomService {
         throw new AppError('Invalid passcode', 401, ErrorCodes.INVALID_PASSCODE);
       }
 
-      // Authenticate user if token provided
-      let user: User | null = null;
-      let isGuest = false;
-
-      if (token) {
-        try {
-          const decoded = jwtService.verifyAccessToken(token);
-          const dbUser = await UserModel.findById(decoded.userId);
-          if (dbUser) {
-            user = {
-              _id: dbUser._id.toString(),
-              name: dbUser.name,
-              email: dbUser.email,
-              createdAt: dbUser.createdAt,
-              updatedAt: dbUser.updatedAt,
-            };
-          }
-        } catch (error) {
-          // Token invalid, treat as guest if allowed
-          if (!guestName) {
-            throw new AppError('Invalid token and no guest name provided', 401, ErrorCodes.UNAUTHORIZED);
-          }
-        }
-      }
-
-      // Handle guest users
-      if (!user && guestName) {
-        if (call.type === 'invited_only') {
-          throw new AppError('Guests not allowed in this call', 403, ErrorCodes.UNAUTHORIZED);
-        }
-
-        isGuest = true;
-        const guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-        user = {
-          _id: guestId,
-          name: guestName,
-          email: `${guestId}@guest.temp`,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(guestName)}&background=random`,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-      }
-
-      if (!user) {
-        throw new AppError('Authentication required', 401, ErrorCodes.UNAUTHORIZED);
-      }
+      // Use authenticated user info
+      const userInfo = {
+        _id: authenticatedUser._id,
+        name: authenticatedUser.name,
+        email: authenticatedUser.email,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
 
       // Check if user can join
-      const canJoinResult = await call.canUserJoin(user._id);
+      const canJoinResult = await call.canUserJoin(userInfo._id);
       if (!canJoinResult.canJoin) {
         throw new AppError(canJoinResult.reason || 'Cannot join room', 403, ErrorCodes.ROOM_FULL);
       }
@@ -157,7 +267,7 @@ export class RoomService {
       }
 
       // Check if participant already exists in room
-      let participant = Array.from(room.participants.values()).find(p => p.userId === user!._id);
+      let participant = Array.from(room.participants.values()).find(p => p.userId === userInfo._id);
       
       if (participant) {
         // Update existing participant's socket
@@ -165,12 +275,12 @@ export class RoomService {
         participant.isConnected = true;
       } else {
         // Create new participant
-        const peerId = `peer_${user._id}_${Date.now()}`;
+        const peerId = `peer_${userInfo._id}_${Date.now()}`;
         participant = {
-          userId: user._id,
+          userId: userInfo._id,
           socketId: socket.id,
           peerId,
-          user,
+          user: userInfo,
           joinedAt: new Date(),
           isConnected: true,
           mediaState: {
@@ -184,44 +294,38 @@ export class RoomService {
 
       // Update socket mappings
       this.socketToRoom.set(socket.id, roomId);
-      this.socketToUser.set(socket.id, user._id);
+      this.socketToUser.set(socket.id, userInfo._id);
 
       // Join Socket.IO room
       await socket.join(roomId);
 
-      // Update call in database if not guest
-      if (!isGuest) {
-        try {
-          const existingParticipant = call.participants.find(p => 
-            p.userId.toString() === user!._id
-          );
+      // Update call in database
+      try {
+        const existingParticipant = call.participants.find(p => 
+          p.userId.toString() === userInfo._id
+        );
 
-          if (!existingParticipant) {
-            await call.addParticipant(user._id, ParticipantRole.PARTICIPANT);
-          } else {
-            await call.updateParticipantStatus(user._id, true, socket.id);
-          }
-
-          // Start call if in waiting status
-          if (call.status === 'waiting') {
-            await call.startCall();
-          }
-        } catch (error) {
-          logger.error('Error updating call in database:', error);
+        if (!existingParticipant) {
+          await call.addParticipant(userInfo._id, ParticipantRole.PARTICIPANT);
+        } else {
+          await call.updateParticipantStatus(userInfo._id, true, socket.id);
         }
-      }
 
-      // Get list of other participants for the joining user
-      const otherParticipants = Array.from(room.participants.values())
-        .filter(p => p.peerId !== participant!.peerId && p.isConnected);
+        // Start call if in waiting status
+        if (call.status === 'waiting') {
+          await call.startCall();
+        }
+      } catch (error) {
+        logger.error('Error updating call in database:', error);
+      }
 
       // Notify joining user
       socket.emit('room:joined', {
         roomId,
         user: participant.user,
-        participants: otherParticipants,
+        participants: Array.from(room.participants.values()),
         settings: room.settings,
-        isHost: user._id === room.hostId,
+        isHost: userInfo._id === room.hostId,
       });
 
       // Notify other participants
@@ -239,9 +343,8 @@ export class RoomService {
 
       logger.info('User joined room', {
         roomId,
-        userId: user._id,
-        userName: user.name,
-        isGuest,
+        userId: userInfo._id,
+        userName: userInfo.name,
         participantCount: room.participants.size,
       });
 

@@ -3,6 +3,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { config } from 'dotenv';
 import mongoose from 'mongoose';
 import { RoomService } from './services/room.service';
+import { authenticateHelper } from '../api-server/middleware/auth.middleware';
 
 // Load environment variables
 config();
@@ -23,8 +24,36 @@ const io = new SocketIOServer(server, {
   transports: ['websocket', 'polling'],
 });
 
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth.token;
+    if (!token) {
+      console.log('🔐 Authentication failed: No token provided');
+      return next(new Error('Authentication required'));
+    }
+    
+    console.log('🔐 Authenticating socket connection...');
+    const user = await authenticateHelper(token);
+    
+    socket.data.user = user;
+    console.log('✅ Socket authentication successful:', { userId: user._id, email: user.email });
+    next();
+  } catch (error) {
+    console.error('🔐 Socket authentication error:', error);
+    return next(new Error('Authentication failed'));
+  }
+});
+
 // Initialize services
-const signalingService = new RoomService(io);
+let signalingService: RoomService;
+try {
+  console.log('🔧 Initializing Room Service...');
+  signalingService = new RoomService(io);
+  console.log('✅ Room Service initialized successfully');
+} catch (error) {
+  console.error('❌ Failed to initialize Room Service:', error);
+  process.exit(1);
+}
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
@@ -37,13 +66,54 @@ io.on('connection', (socket) => {
    * Room Management Events
    */
   socket.on('room:join', async (data) => {
-    console.log('📥 Room join request:', { socketId: socket.id, data });
-    await signalingService.joinRoom(socket, data);
+    try {
+      console.log('📥 Room join request:', { 
+        socketId: socket.id, 
+        userId: socket.data?.user?._id,
+        data 
+      });
+      
+      if (!socket.data?.user) {
+        throw new Error('User not authenticated');
+      }
+      
+      await signalingService.joinRoom(socket, data);
+    } catch (error) {
+      console.error('❌ Error handling room:join:', error);
+      socket.emit('error', { 
+        message: error instanceof Error ? error.message : 'Failed to join room'
+      });
+    }
+  });
+
+  socket.on('room:create', async (data) => {
+    try {
+      console.log('📥 Room create request:', { 
+        socketId: socket.id, 
+        userId: socket.data?.user?._id,
+        data 
+      });
+      
+      if (!socket.data?.user) {
+        throw new Error('User not authenticated');
+      }
+      
+      await signalingService.createRoom(socket, data);
+    } catch (error) {
+      console.error('❌ Error handling room:create:', error);
+      socket.emit('error', { 
+        message: error instanceof Error ? error.message : 'Failed to create room'
+      });
+    }
   });
 
   socket.on('room:leave', async () => {
-    console.log('📤 Room leave request:', { socketId: socket.id });
-    await signalingService.leaveRoom(socket);
+    try {
+      console.log('📤 Room leave request:', { socketId: socket.id });
+      await signalingService.leaveRoom(socket);
+    } catch (error) {
+      console.error('❌ Error handling room:leave:', error);
+    }
   });
 
   /**
@@ -142,6 +212,121 @@ io.on('connection', (socket) => {
   });
 
   /**
+   * WebRTC Signaling Events
+   */
+  socket.on('webrtc:offer', (data: { 
+    to: string; 
+    from: string; 
+    offer: RTCSessionDescriptionInit;
+    roomId: string;
+  }) => {
+    try {
+      console.log(`📡 WebRTC offer from ${data.from} to ${data.to} in room ${data.roomId}`);
+      
+      // Verify both users are in the same room
+      const room = signalingService['rooms'].get(data.roomId);
+      if (!room) {
+        socket.emit('error', { message: 'Room not found', code: 'ROOM_NOT_FOUND' });
+        return;
+      }
+
+      // Forward the offer to the target peer
+      const targetSockets = Array.from(room.participants.entries())
+        .filter(([_, participant]) => participant.userId === data.to)
+        .map(([socketId]) => socketId);
+
+      if (targetSockets.length > 0) {
+        targetSockets.forEach(targetSocketId => {
+          io.to(targetSocketId).emit('webrtc:offer', {
+            from: data.from,
+            offer: data.offer,
+            roomId: data.roomId
+          });
+        });
+      } else {
+        socket.emit('error', { message: 'Target user not found in room', code: 'USER_NOT_FOUND' });
+      }
+    } catch (error) {
+      console.error('❌ Error handling WebRTC offer:', error);
+      socket.emit('error', { message: 'Failed to process offer', code: 'WEBRTC_ERROR' });
+    }
+  });
+
+  socket.on('webrtc:answer', (data: { 
+    to: string; 
+    from: string; 
+    answer: RTCSessionDescriptionInit;
+    roomId: string;
+  }) => {
+    try {
+      console.log(`📡 WebRTC answer from ${data.from} to ${data.to} in room ${data.roomId}`);
+      
+      // Verify both users are in the same room
+      const room = signalingService['rooms'].get(data.roomId);
+      if (!room) {
+        socket.emit('error', { message: 'Room not found', code: 'ROOM_NOT_FOUND' });
+        return;
+      }
+
+      // Forward the answer to the target peer
+      const targetSockets = Array.from(room.participants.entries())
+        .filter(([_, participant]) => participant.userId === data.to)
+        .map(([socketId]) => socketId);
+
+      if (targetSockets.length > 0) {
+        targetSockets.forEach(targetSocketId => {
+          io.to(targetSocketId).emit('webrtc:answer', {
+            from: data.from,
+            answer: data.answer,
+            roomId: data.roomId
+          });
+        });
+      } else {
+        socket.emit('error', { message: 'Target user not found in room', code: 'USER_NOT_FOUND' });
+      }
+    } catch (error) {
+      console.error('❌ Error handling WebRTC answer:', error);
+      socket.emit('error', { message: 'Failed to process answer', code: 'WEBRTC_ERROR' });
+    }
+  });
+
+  socket.on('webrtc:ice-candidate', (data: { 
+    to: string; 
+    from: string; 
+    candidate: RTCIceCandidateInit;
+    roomId: string;
+  }) => {
+    try {
+      console.log(`🧊 ICE candidate from ${data.from} to ${data.to} in room ${data.roomId}`);
+      
+      // Verify both users are in the same room
+      const room = signalingService['rooms'].get(data.roomId);
+      if (!room) {
+        socket.emit('error', { message: 'Room not found', code: 'ROOM_NOT_FOUND' });
+        return;
+      }
+
+      // Forward the ICE candidate to the target peer
+      const targetSockets = Array.from(room.participants.entries())
+        .filter(([_, participant]) => participant.userId === data.to)
+        .map(([socketId]) => socketId);
+
+      if (targetSockets.length > 0) {
+        targetSockets.forEach(targetSocketId => {
+          io.to(targetSocketId).emit('webrtc:ice-candidate', {
+            from: data.from,
+            candidate: data.candidate,
+            roomId: data.roomId
+          });
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error handling ICE candidate:', error);
+      socket.emit('error', { message: 'Failed to process ICE candidate', code: 'WEBRTC_ERROR' });
+    }
+  });
+
+  /**
    * Admin/Debug Events
    */
   socket.on('admin:get-room-stats', (data: { roomId: string }, callback) => {
@@ -168,12 +353,16 @@ io.on('connection', (socket) => {
    * Disconnect Event
    */
   socket.on('disconnect', async (reason) => {
-    console.log('🔌 Client disconnected:', {
-      socketId: socket.id,
-      reason,
-      remoteAddress: socket.handshake.address,
-    });
-    await signalingService.leaveRoom(socket);
+    try {
+      console.log('🔌 Client disconnected:', {
+        socketId: socket.id,
+        reason,
+        remoteAddress: socket.handshake.address,
+      });
+      await signalingService.leaveRoom(socket);
+    } catch (error) {
+      console.error('❌ Error handling disconnect:', error);
+    }
   });
 
   socket.on('connect_error', (error: Error) => {
@@ -212,6 +401,17 @@ async function startSignalingServer() {
       console.log('  📊 admin:get-room-stats - Get room statistics');
     });
 
+    // Error handlers
+    process.on('uncaughtException', (error) => {
+      console.error('🚨 Uncaught Exception:', error);
+      console.error('Stack trace:', error.stack);
+    });
+
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('🚨 Unhandled Rejection at:', promise);
+      console.error('Reason:', reason);
+    });
+
     // Graceful shutdown
     process.on('SIGTERM', () => {
       console.log('SIGTERM received, shutting down gracefully');
@@ -230,7 +430,10 @@ async function startSignalingServer() {
 // Start server if this file is run directly
 if (require.main === module) {
   console.log('🚀 Starting WebRTC Signaling Server...');
-  startSignalingServer();
+  startSignalingServer().catch((error) => {
+    console.error('❌ Failed to start signaling server:', error);
+    process.exit(1);
+  });
 }
 
 export { io, startSignalingServer };

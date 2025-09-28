@@ -13,10 +13,26 @@ declare global {
   }
 }
 
+export const authenticateHelper = async (token: string) => {
+  // Verify token
+  const decoded = jwtService.verifyAccessToken(token);
+  // Fetch user from database
+  const user = await UserModel.findById(decoded.userId).select('-password');
+  if (!user) {
+    throw new AppError('User not found', 401, ErrorCodes.UNAUTHORIZED);
+  }
+  return {
+    _id: user._id.toString(),
+    name: user.name,
+    email: user.email,
+    decoded: decoded
+  };
+};
+
 /**
  * Middleware to authenticate requests using JWT tokens
  */
-export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
   try {
     // Extract token from Authorization header
     const authHeader = req.headers.authorization;
@@ -26,17 +42,10 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
       throw new AppError('Access token required', 401, ErrorCodes.UNAUTHORIZED);
     }
 
-    // Verify token
-    const decoded = jwtService.verifyAccessToken(token);
-
-    // Fetch user from database
-    const user = await UserModel.findById(decoded.userId).select('-password');
-    if (!user) {
-      throw new AppError('User not found', 401, ErrorCodes.UNAUTHORIZED);
-    }
+    const user = await authenticateHelper(token);
 
     // Add user to request object
-    req.user = user.toJSON() as unknown as User;
+    req.user = user as unknown as User;
     
     logger.debug('User authenticated', { userId: user._id, email: user.email });
     next();
@@ -61,7 +70,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 /**
  * Optional authentication middleware - doesn't fail if no token provided
  */
-export const optionalAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const optionalAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
     const token = jwtService.extractTokenFromHeader(authHeader);
@@ -72,7 +81,11 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
         const user = await UserModel.findById(decoded.userId).select('-password');
         
         if (user) {
-          req.user = user.toJSON() as unknown as User;
+          req.user = {
+            _id: user._id.toString(),
+            name: user.name,
+            email: user.email
+          } as User;
           logger.debug('Optional auth - user authenticated', { userId: user._id });
         }
       } catch (error) {
@@ -91,7 +104,7 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
 /**
  * Middleware to check if user is the host of a call
  */
-export const requireHost = async (req: Request, res: Response, next: NextFunction) => {
+export const requireHost = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
   try {
     if (!req.user) {
       throw new AppError('Authentication required', 401, ErrorCodes.UNAUTHORIZED);
@@ -99,7 +112,7 @@ export const requireHost = async (req: Request, res: Response, next: NextFunctio
 
     // This middleware should be used after fetching the call
     // The call should be attached to req.call by a previous middleware
-    const call = (req as any).call;
+    const call = (req as Request & { call?: { hostId: string } }).call;
     
     if (!call) {
       throw new AppError('Call not found', 404, ErrorCodes.CALL_NOT_FOUND);
@@ -131,13 +144,18 @@ export const requireHost = async (req: Request, res: Response, next: NextFunctio
 /**
  * Middleware to check if user can access a call (host or participant)
  */
-export const requireCallAccess = async (req: Request, res: Response, next: NextFunction) => {
+export const requireCallAccess = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
   try {
     if (!req.user) {
       throw new AppError('Authentication required', 401, ErrorCodes.UNAUTHORIZED);
     }
 
-    const call = (req as any).call;
+    const call = (req as Request & { 
+      call?: { 
+        hostId: string;
+        participants: Array<{ userId: string }>;
+      } 
+    }).call;
     
     if (!call) {
       throw new AppError('Call not found', 404, ErrorCodes.CALL_NOT_FOUND);
@@ -149,7 +167,7 @@ export const requireCallAccess = async (req: Request, res: Response, next: NextF
     }
 
     // Check if user is a participant
-    const isParticipant = call.participants.some((p: any) => 
+    const isParticipant = call.participants.some((p) => 
       p.userId.toString() === req.user._id.toString()
     );
 
@@ -182,7 +200,7 @@ export const requireCallAccess = async (req: Request, res: Response, next: NextF
 export const authRateLimit = {
   attempts: new Map<string, { count: number; resetTime: number }>(),
   
-  check: (req: Request, res: Response, next: NextFunction) => {
+  check: (req: Request, res: Response, next: NextFunction): void | Response => {
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const now = Date.now();
     const windowMs = 15 * 60 * 1000; // 15 minutes
@@ -208,7 +226,7 @@ export const authRateLimit = {
 
     // Increment attempt count on authentication failure
     const originalJson = res.json;
-    res.json = function(body: any) {
+    res.json = function(body: Record<string, unknown>) {
       if (!body.success && (res.statusCode === 401 || res.statusCode === 400)) {
         attempts.count++;
         authRateLimit.attempts.set(ip, attempts);
@@ -236,7 +254,7 @@ setInterval(authRateLimit.cleanup, 60 * 60 * 1000);
 /**
  * Middleware to validate API key for server-to-server communication
  */
-export const validateApiKey = (req: Request, res: Response, next: NextFunction) => {
+export const validateApiKey = (req: Request, res: Response, next: NextFunction): void | Response => {
   const apiKey = req.headers['x-api-key'] || req.query.apiKey;
   const validApiKey = process.env.API_KEY;
 

@@ -94,3 +94,404 @@
 {"level":"warn","message":"Database disconnected","timestamp":"2025-09-27 23:44:14:4414"}
 {"level":"info","message":"Database reconnected","timestamp":"2025-09-27 23:44:14:4414"}
 {"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-27 23:52:26:5226","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 00:36:31:3631"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 18:43:23:4323"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 18:43:23:4323"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 18:43:24:4324"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 18:43:24:4324"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 18:43:46:4346","userId":"68d7c227310089150052cb48"}
+{"code":"ROOM_NOT_FOUND","isOperational":true,"level":"error","message":"Error joining room: Room not found","stack":"Error: Room not found\n    at RoomService.joinRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:78:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:41:5)","statusCode":404,"timestamp":"2025-09-28 18:44:06:446"}
+{"code":"ROOM_NOT_FOUND","isOperational":true,"level":"error","message":"Error joining room: Room not found","stack":"Error: Room not found\n    at RoomService.joinRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:78:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:41:5)","statusCode":404,"timestamp":"2025-09-28 18:44:45:4445"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 18:50:46:5046"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 18:50:52:5052"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 18:50:52:5052"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 18:50:55:5055"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 18:50:55:5055"}
+{"code":"UNAUTHORIZED","isOperational":true,"level":"error","message":"Error creating room: Authentication required to create room","stack":"Error: Authentication required to create room\n    at RoomService.createRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:80:15)\n    at Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:46:28)\n    at Socket.emit (node:events:508:28)\n    at Socket.emit (node:domain:489:12)\n    at Socket.emitUntyped (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/typed-events.js:69:22)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/socket.js:697:39\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","statusCode":401,"timestamp":"2025-09-28 18:51:18:5118"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 19:12:52:1252"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 19:12:57:1257"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 19:12:57:1257"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 19:13:20:1320","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 19:14:31:1431"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 19:18:11:1811"}
+{"level":"error","message":"Error creating room: Cannot read properties of undefined (reading '_id')","stack":"TypeError: Cannot read properties of undefined (reading '_id')\n    at RoomService.createRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:86:26)\n    at Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:81:30)\n    at Socket.emit (node:events:508:28)\n    at Socket.emit (node:domain:489:12)\n    at Socket.emitUntyped (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/typed-events.js:69:22)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/socket.js:697:39\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 19:18:22:1822"}
+{"level":"error","message":"Error creating room: Cannot read properties of undefined (reading '_id')","stack":"TypeError: Cannot read properties of undefined (reading '_id')\n    at RoomService.createRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:86:26)\n    at Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:81:30)\n    at Socket.emit (node:events:508:28)\n    at Socket.emit (node:domain:489:12)\n    at Socket.emitUntyped (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/typed-events.js:69:22)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/socket.js:697:39\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 19:38:44:3844"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 19:43:34:4334","userId":"68d7c227310089150052cb48"}
+{"level":"error","message":"Error creating room: Cannot read properties of undefined (reading '_id')","stack":"TypeError: Cannot read properties of undefined (reading '_id')\n    at RoomService.createRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:86:26)\n    at Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:81:30)\n    at Socket.emit (node:events:508:28)\n    at Socket.emit (node:domain:489:12)\n    at Socket.emitUntyped (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/typed-events.js:69:22)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/socket.js:697:39\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 19:44:02:442"}
+{"level":"error","message":"Error creating room: Cannot read properties of undefined (reading '_id')","stack":"TypeError: Cannot read properties of undefined (reading '_id')\n    at RoomService.createRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:86:26)\n    at Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:81:30)\n    at Socket.emit (node:events:508:28)\n    at Socket.emit (node:domain:489:12)\n    at Socket.emitUntyped (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/typed-events.js:69:22)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/socket.js:697:39\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 19:57:24:5724"}
+{"level":"error","message":"Error creating room: Cannot read properties of undefined (reading '_id')","stack":"TypeError: Cannot read properties of undefined (reading '_id')\n    at RoomService.createRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:86:26)\n    at Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:81:30)\n    at Socket.emit (node:events:508:28)\n    at Socket.emit (node:domain:489:12)\n    at Socket.emitUntyped (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/typed-events.js:69:22)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/socket.js:697:39\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 20:00:15:015"}
+{"level":"error","message":"Error creating room: Cannot read properties of undefined (reading '_id')","stack":"TypeError: Cannot read properties of undefined (reading '_id')\n    at RoomService.createRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:86:26)\n    at Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:81:30)\n    at Socket.emit (node:events:508:28)\n    at Socket.emit (node:domain:489:12)\n    at Socket.emitUntyped (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/typed-events.js:69:22)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/socket.js:697:39\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 20:01:25:125"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-28 20:10:04:104"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-28 20:10:04:104"}
+{"level":"warn","message":"Database disconnected","timestamp":"2025-09-28 20:10:14:1014"}
+{"level":"info","message":"Database reconnected","timestamp":"2025-09-28 20:10:16:1016"}
+{"level":"error","message":"Error creating room: Cannot read properties of undefined (reading '_id')","stack":"TypeError: Cannot read properties of undefined (reading '_id')\n    at RoomService.createRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:86:26)\n    at Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:81:30)\n    at Socket.emit (node:events:508:28)\n    at Socket.emit (node:domain:489:12)\n    at Socket.emitUntyped (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/typed-events.js:69:22)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/socket.io/dist/socket.js:697:39\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 20:13:00:130"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 20:13:06:136"}
+{"level":"warn","message":"Database disconnected","timestamp":"2025-09-28 20:13:06:136"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 20:13:12:1312"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 20:13:12:1312"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 20:13:13:1313"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 20:13:13:1313"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 20:13:31:1331","userId":"68d7c227310089150052cb48"}
+{"_message":"VideoCall validation failed","errors":{"joinLink":{"kind":"required","message":"Path `joinLink` is required.","name":"ValidatorError","path":"joinLink","properties":{"message":"Path `joinLink` is required.","path":"joinLink","type":"required"}},"status":{"kind":"enum","message":"`active` is not a valid enum value for path `status`.","name":"ValidatorError","path":"status","properties":{"enumValues":["scheduled","waiting","live","ended","cancelled"],"length":6,"message":"`active` is not a valid enum value for path `status`.","path":"status","type":"enum","value":"active"},"value":"active"}},"level":"error","message":"Error creating room: VideoCall validation failed: joinLink: Path `joinLink` is required., status: `active` is not a valid enum value for path `status`.","stack":"ValidationError: VideoCall validation failed: joinLink: Path `joinLink` is required., status: `active` is not a valid enum value for path `status`.\n    at model.Document.invalidate (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/mongoose/lib/document.js:3358:32)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/mongoose/lib/document.js:3119:17\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/mongoose/lib/schemaType.js:1416:9\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 20:13:41:1341"}
+{"_message":"VideoCall validation failed","errors":{"joinLink":{"kind":"required","message":"Path `joinLink` is required.","name":"ValidatorError","path":"joinLink","properties":{"message":"Path `joinLink` is required.","path":"joinLink","type":"required"}},"status":{"kind":"enum","message":"`active` is not a valid enum value for path `status`.","name":"ValidatorError","path":"status","properties":{"enumValues":["scheduled","waiting","live","ended","cancelled"],"length":6,"message":"`active` is not a valid enum value for path `status`.","path":"status","type":"enum","value":"active"},"value":"active"}},"level":"error","message":"Error creating room: VideoCall validation failed: joinLink: Path `joinLink` is required., status: `active` is not a valid enum value for path `status`.","stack":"ValidationError: VideoCall validation failed: joinLink: Path `joinLink` is required., status: `active` is not a valid enum value for path `status`.\n    at model.Document.invalidate (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/mongoose/lib/document.js:3358:32)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/mongoose/lib/document.js:3119:17\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/mongoose/lib/schemaType.js:1416:9\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 20:17:55:1755"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 20:18:04:184"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 20:18:10:1810"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 20:18:10:1810"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 20:18:11:1811"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 20:18:11:1811"}
+{"_message":"VideoCall validation failed","errors":{"joinLink":{"kind":"required","message":"Path `joinLink` is required.","name":"ValidatorError","path":"joinLink","properties":{"message":"Path `joinLink` is required.","path":"joinLink","type":"required"}}},"level":"error","message":"Error creating room: VideoCall validation failed: joinLink: Path `joinLink` is required.","stack":"ValidationError: VideoCall validation failed: joinLink: Path `joinLink` is required.\n    at model.Document.invalidate (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/mongoose/lib/document.js:3358:32)\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/mongoose/lib/document.js:3119:17\n    at /Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/node_modules/mongoose/lib/schemaType.js:1416:9\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-28 20:18:15:1815"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 20:20:41:2041"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 20:20:45:2045"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 20:20:45:2045"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 20:20:47:2047"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 20:20:47:2047"}
+{"callId":"68d94b4a0642a823fb6fe386","hostId":"68d7c227310089150052cb48","hostName":"Sumit","isPrivate":false,"level":"info","maxParticipants":10,"message":"Room created successfully","roomId":"a31u0414q","timestamp":"2025-09-28 20:20:50:2050","title":"AI is booming"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:23:10:2310","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 20:23:10:2310","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:23:10:2310","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 20:23:41:2341","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:23:42:2342","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 20:23:42:2342","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:23:42:2342","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 20:27:18:2718","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 20:27:19:2719","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:27:19:2719","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:27:19:2719","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 20:28:16:2816","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:28:16:2816","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 20:31:27:3127","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:31:27:3127","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 20:31:44:3144","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 20:31:50:3150","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"Room cleaned up","roomId":"a31u0414q","timestamp":"2025-09-28 20:31:57:3157"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:31:59:3159","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 20:31:59:3159","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:31:59:3159","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"email":"sumit.baghel.dev@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 20:32:39:3239","userId":"68d7ca74133706b1ae0d8e44"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 20:32:48:3248","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 20:32:48:3248","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 20:32:49:3249","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 21:36:27:3627","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"email":"sumit.baghel.dev@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 21:36:34:3634","userId":"68d7ca74133706b1ae0d8e44"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 21:36:50:3650","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 21:37:03:373","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 21:37:14:3714","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 21:37:14:3714","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 21:37:14:3714","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 21:37:25:3725","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 21:37:26:3726","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 21:37:26:3726","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 21:51:21:5121","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 21:51:21:5121","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"Room cleaned up","roomId":"a31u0414q","timestamp":"2025-09-28 21:51:51:5151"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 22:01:49:149","userId":"68d7c227310089150052cb48"}
+{"code":"ROOM_NOT_FOUND","isOperational":true,"level":"error","message":"Error joining room: Room not found","stack":"Error: Room not found\n    at RoomService.joinRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:232:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:80:7)","statusCode":404,"timestamp":"2025-09-28 22:02:11:211"}
+{"code":"ROOM_NOT_FOUND","isOperational":true,"level":"error","message":"Error joining room: Room not found","stack":"Error: Room not found\n    at RoomService.joinRoom (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/services/room.service.ts:232:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Socket.<anonymous> (/Users/sumitbaghel/extra-efforts/VideoCallingApp/vdo-v2-backend/src/signaling-server/index.ts:80:7)","statusCode":404,"timestamp":"2025-09-28 22:02:11:211"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:08:48:848","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:08:48:848","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:08:48:848","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"email":"sumit.baghel.dev@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 22:08:59:859","userId":"68d7ca74133706b1ae0d8e44"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:09:02:92","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:09:03:93","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:09:03:93","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:15:52:1552","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:15:52:1552","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:15:52:1552","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:15:52:1552","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:16:30:1630","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:16:33:1633","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:16:33:1633","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:16:33:1633","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:27:08:278","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"email":"sumit.baghel.dev@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 22:27:24:2724","userId":"68d7ca74133706b1ae0d8e44"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:27:31:2731","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:27:31:2731","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:27:31:2731","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 22:29:26:2926"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 22:29:31:2931"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 22:29:31:2931"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 22:29:32:2932"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 22:29:32:2932"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 22:29:42:2942","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:29:49:2949","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:29:49:2949","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:29:49:2949","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 22:34:36:3436"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 22:34:40:3440"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:34:44:3444","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:34:44:3444","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:34:44:3444","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:34:53:3453","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:34:53:3453","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:34:53:3453","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:35:25:3525","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:35:26:3526","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:35:26:3526","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:35:26:3526","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:40:56:4056","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:40:56:4056","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:40:56:4056","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:40:56:4056","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:42:36:4236","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:42:36:4236","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:42:36:4236","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:42:36:4236","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:44:53:4453","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:44:53:4453","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:44:53:4453","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:44:53:4453","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:49:31:4931","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:49:31:4931","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:49:31:4931","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:49:31:4931","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:49:38:4938","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:49:38:4938","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:49:39:4939","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:49:39:4939","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:50:12:5012","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:50:12:5012","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:50:13:5013","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:50:13:5013","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:33:5133","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:33:5133","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:33:5133","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:33:5133","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:33:5133","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:33:5133","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:34:5134","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:48:5148","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:48:5148","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:48:5148","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:51:48:5148","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:52:43:5243","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:52:58:5258","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"Room cleaned up","roomId":"a31u0414q","timestamp":"2025-09-28 22:53:28:5328"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 22:56:32:5632"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 22:56:38:5638"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 22:56:38:5638"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 22:56:41:5641"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 22:56:41:5641"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 22:56:48:5648","userId":"68d7c227310089150052cb48"}
+{"email":"sumit.baghel.dev@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 22:56:58:5658","userId":"68d7ca74133706b1ae0d8e44"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:08:578","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:09:579","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:09:579","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:12:5712","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:13:5713","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:13:5713","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:13:5713","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:59:5759","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:59:5759","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:57:59:5759","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:24:5824","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:24:5824","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:24:5824","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:24:5824","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:39:5839","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:40:5840","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:40:5840","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:40:5840","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:53:5853","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:53:5853","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:53:5853","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 22:58:53:5853","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:05:03:53","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:05:03:53","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:05:04:54","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:05:04:54","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:05:04:54","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:05:05:55","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:05:05:55","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:05:05:55","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:10:07:107","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:10:07:107","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:10:07:107","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:10:07:107","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:17:06:176","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"email":"sumit.baghel.dev@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 23:17:14:1714","userId":"68d7ca74133706b1ae0d8e44"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:17:26:1726","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:17:27:1727","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:17:27:1727","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:19:26:1926","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"email":"john.doe@example.com","level":"info","message":"User logged in successfully","timestamp":"2025-09-28 23:19:34:1934","userId":"68d7c227310089150052cb48"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:19:41:1941","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:19:41:1941","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:19:41:1941","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:06:226","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:06:226","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:07:227","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:07:227","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:08:228","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:08:228","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:10:2210","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:11:2211","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:21:2221","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:25:2225","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:25:2225","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:22:25:2225","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:23:16:2316","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:23:17:2317","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:23:17:2317","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:23:17:2317","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:24:35:2435","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:24:36:2436","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:24:37:2437","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:24:37:2437","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:24:37:2437","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:24:38:2438","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:24:38:2438","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:24:38:2438","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:25:07:257","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:25:07:257","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:25:07:257","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:25:07:257","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:26:24:2624","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:26:24:2624","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:26:24:2624","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:26:24:2624","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:26:32:2632","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:26:33:2633","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:26:33:2633","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:26:33:2633","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 23:26:50:2650"}
+{"level":"info","message":"🚀 Starting Video Call API Server...","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"🔗 Connecting to database...","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"Database connected: mongodb+srv://***@cluster0.noc93gq.mongodb.net/vdo-call","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"✅ Database connected successfully!","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"🚀 Video Call API Server started successfully!","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"📍 Server running on http://localhost:4000","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"🔍 Health check: http://localhost:4000/api/health","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"📋 Available endpoints:","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"  POST /api/auth/register - Register new user","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"  POST /api/auth/login - Login user","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"  GET /api/auth/profile - Get user profile","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"  POST /api/video-calls - Create video call","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"  GET /api/video-calls - Get user's video calls","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"  GET /api/video-calls/:roomId - Get video call by room ID","timestamp":"2025-09-28 23:26:57:2657"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:08:278","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:08:278","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:08:278","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:14:2714","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:14:2714","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:14:2714","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:24:2724","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:24:2724","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:24:2724","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:24:2724","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:33:2733","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:33:2733","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:34:2734","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User joined room","participantCount":2,"roomId":"a31u0414q","timestamp":"2025-09-28 23:27:34:2734","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"User left room","remainingParticipants":1,"roomId":"a31u0414q","timestamp":"2025-09-28 23:30:47:3047","userId":"68d7ca74133706b1ae0d8e44","userName":"Mangesh"}
+{"level":"info","message":"User left room","remainingParticipants":0,"roomId":"a31u0414q","timestamp":"2025-09-28 23:30:52:3052","userId":"68d7c227310089150052cb48","userName":"Sumit"}
+{"level":"info","message":"Room cleaned up","roomId":"a31u0414q","timestamp":"2025-09-28 23:31:22:3122"}
+{"level":"info","message":"Shutting down gracefully...","timestamp":"2025-09-28 23:32:20:3220"}
