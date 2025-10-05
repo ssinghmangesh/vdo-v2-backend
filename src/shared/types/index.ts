@@ -1,7 +1,7 @@
 // Shared types used across both API server and Signaling server
 
 export interface User {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   avatar?: string;
@@ -10,7 +10,7 @@ export interface User {
 }
 
 export interface VideoCall {
-  _id: string;
+  id: string;
   title: string;
   description?: string;
   hostId: string;

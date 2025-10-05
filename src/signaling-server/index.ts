@@ -36,7 +36,7 @@ io.use(async (socket, next) => {
     const user = await authenticateHelper(token);
     
     socket.data.user = user;
-    console.log('✅ Socket authentication successful:', { userId: user._id, email: user.email });
+    console.log('✅ Socket authentication successful:', { userId: user.id, email: user.email });
     next();
   } catch (error) {
     console.error('🔐 Socket authentication error:', error);

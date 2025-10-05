@@ -22,7 +22,7 @@ export const authenticateHelper = async (token: string) => {
     throw new AppError('User not found', 401, ErrorCodes.UNAUTHORIZED);
   }
   return {
-    _id: user._id.toString(),
+    id: user._id.toString(),
     name: user.name,
     email: user.email,
     decoded: decoded
@@ -47,7 +47,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     // Add user to request object
     req.user = user as unknown as User;
     
-    logger.debug('User authenticated', { userId: user._id, email: user.email });
+    logger.debug('User authenticated', { userId: user.id, email: user.email });
     next();
   } catch (error) {
     if (error instanceof AppError) {
@@ -82,7 +82,7 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
         
         if (user) {
           req.user = {
-            _id: user._id.toString(),
+            id: user._id.toString(),
             name: user.name,
             email: user.email
           } as User;
@@ -118,7 +118,7 @@ export const requireHost = async (req: Request, res: Response, next: NextFunctio
       throw new AppError('Call not found', 404, ErrorCodes.CALL_NOT_FOUND);
     }
 
-    if (call.hostId.toString() !== req.user._id.toString()) {
+    if (call.hostId.toString() !== req.user.id.toString()) {
       throw new AppError('Only the host can perform this action', 403, ErrorCodes.HOST_REQUIRED);
     }
 
@@ -162,13 +162,13 @@ export const requireCallAccess = async (req: Request, res: Response, next: NextF
     }
 
     // Check if user is host
-    if (call.hostId.toString() === req.user._id.toString()) {
+    if (call.hostId.toString() === req.user.id.toString()) {
       return next();
     }
 
     // Check if user is a participant
     const isParticipant = call.participants.some((p) => 
-      p.userId.toString() === req.user._id.toString()
+      p.userId.toString() === req.user.id.toString()
     );
 
     if (!isParticipant) {

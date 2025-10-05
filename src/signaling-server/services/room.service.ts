@@ -64,7 +64,7 @@ export class RoomService {
       const authenticatedUser = socket.data.user;
 
       console.log('👤 Creating room for user:', { 
-        userId: authenticatedUser._id, 
+        userId: authenticatedUser.id, 
         email: authenticatedUser.email,
         name: authenticatedUser.name 
       });
@@ -79,7 +79,7 @@ export class RoomService {
       } = data;
 
       let userInfo = {
-        _id: authenticatedUser._id,
+        id: authenticatedUser.id,
         name: authenticatedUser.name,
         email: authenticatedUser.email,
         createdAt: new Date(),
@@ -94,7 +94,7 @@ export class RoomService {
       // Create call in database
       const call = new VideoCallModel({
         roomId,
-        hostId: userInfo._id,
+        hostId: userInfo.id,
         title: title || `${userInfo.name}'s Meeting`,
         description: '',
         settings: {
@@ -105,7 +105,7 @@ export class RoomService {
         },
         status,
         participants: [{
-          userId: userInfo._id,
+          userId: userInfo.id,
           joinedAt: new Date(),
           isActive: true,
           role: ParticipantRole.HOST,
@@ -121,7 +121,7 @@ export class RoomService {
       const room: RoomState = {
         roomId,
         callId: call._id.toString(),
-        hostId: userInfo._id,
+        hostId: userInfo.id,
         participants: new Map(),
         settings: call.settings,
         createdAt: new Date(),
@@ -130,7 +130,7 @@ export class RoomService {
       // Create host participant
       const hostParticipant: ParticipantConnection = {
         peerId,
-        userId: userInfo._id,
+        userId: userInfo.id,
         socketId: socket.id,
         user: userInfo,
         mediaState: {
@@ -148,12 +148,12 @@ export class RoomService {
       // Store room and mappings
       this.rooms.set(roomId, room);
       this.socketToRoom.set(socket.id, roomId);
-      this.socketToUser.set(socket.id, userInfo._id);
+      this.socketToUser.set(socket.id, userInfo.id);
 
       // Join Socket.IO room
       await socket.join(roomId);
 
-      console.log('✅ Room created successfully:', { roomId, hostId: userInfo._id });
+      console.log('✅ Room created successfully:', { roomId, hostId: userInfo.id });
 
       // Prepare room data for frontend (matching Room interface)
       const roomResponse = {
@@ -161,7 +161,7 @@ export class RoomService {
         name: title || `${userInfo.name}'s Meeting`,
         participants: [userInfo],
         createdAt: new Date(),
-        hostId: userInfo._id,
+        hostId: userInfo.id,
         isPrivate: isPrivate || false,
         maxParticipants: maxParticipants || 10,
       };
@@ -172,7 +172,7 @@ export class RoomService {
       logger.info('Room created successfully', {
         roomId,
         callId: call._id.toString(),
-        hostId: userInfo._id,
+        hostId: userInfo.id,
         hostName: userInfo.name,
         title: title || `${userInfo.name}'s Meeting`,
         isPrivate: isPrivate || false,
@@ -206,14 +206,7 @@ export class RoomService {
   }): Promise<void> {
     try {
       // Get user from authenticated socket data
-      const authenticatedUser = socket.data.user;
-
-      console.log('👤 User joining room:', { 
-        userId: authenticatedUser._id, 
-        email: authenticatedUser.email,
-        name: authenticatedUser.name,
-        roomId: data.roomId
-      });
+      const userInfo = socket.data.user;
 
       const { roomId, passcode } = data;
 
@@ -231,17 +224,8 @@ export class RoomService {
         throw new AppError('Invalid passcode', 401, ErrorCodes.INVALID_PASSCODE);
       }
 
-      // Use authenticated user info
-      const userInfo = {
-        _id: authenticatedUser._id,
-        name: authenticatedUser.name,
-        email: authenticatedUser.email,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-
       // Check if user can join
-      const canJoinResult = await call.canUserJoin(userInfo._id);
+      const canJoinResult = await call.canUserJoin(userInfo.id);
       if (!canJoinResult.canJoin) {
         throw new AppError(canJoinResult.reason || 'Cannot join room', 403, ErrorCodes.ROOM_FULL);
       }
@@ -267,7 +251,7 @@ export class RoomService {
       }
 
       // Check if participant already exists in room
-      let participant = Array.from(room.participants.values()).find(p => p.userId === userInfo._id);
+      let participant = Array.from(room.participants.values()).find(p => p.userId === userInfo.id);
       
       if (participant) {
         // Update existing participant's socket
@@ -275,9 +259,9 @@ export class RoomService {
         participant.isConnected = true;
       } else {
         // Create new participant
-        const peerId = `peer_${userInfo._id}_${Date.now()}`;
+        const peerId = `peer_${userInfo.id}_${Date.now()}`;
         participant = {
-          userId: userInfo._id,
+          userId: userInfo.id,
           socketId: socket.id,
           peerId,
           user: userInfo,
@@ -294,7 +278,7 @@ export class RoomService {
 
       // Update socket mappings
       this.socketToRoom.set(socket.id, roomId);
-      this.socketToUser.set(socket.id, userInfo._id);
+      this.socketToUser.set(socket.id, userInfo.id);
 
       // Join Socket.IO room
       await socket.join(roomId);
@@ -302,13 +286,13 @@ export class RoomService {
       // Update call in database
       try {
         const existingParticipant = call.participants.find(p => 
-          p.userId.toString() === userInfo._id
+          p.userId.toString() === userInfo.id
         );
 
         if (!existingParticipant) {
-          await call.addParticipant(userInfo._id, ParticipantRole.PARTICIPANT);
+          await call.addParticipant(userInfo.id, ParticipantRole.PARTICIPANT);
         } else {
-          await call.updateParticipantStatus(userInfo._id, true, socket.id);
+          await call.updateParticipantStatus(userInfo.id, true, socket.id);
         }
 
         // Start call if in waiting status
@@ -325,7 +309,7 @@ export class RoomService {
         user: participant.user,
         participants: Array.from(room.participants.values()),
         settings: room.settings,
-        isHost: userInfo._id === room.hostId,
+        isHost: userInfo.id === room.hostId,
       });
 
       // Notify other participants
@@ -343,7 +327,7 @@ export class RoomService {
 
       logger.info('User joined room', {
         roomId,
-        userId: userInfo._id,
+        userId: userInfo.id,
         userName: userInfo.name,
         participantCount: room.participants.size,
       });

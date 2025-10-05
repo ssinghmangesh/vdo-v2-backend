@@ -4,6 +4,10 @@ import { UserModel } from '../models/user.model';
 import { jwtService } from '../../shared/utils/jwt';
 import { logger } from '../../shared/utils/logger';
 import { asyncHandler } from '../middleware/error.middleware';
+import { config } from 'dotenv';
+
+// Load environment variables
+config();
 
 /**
  * Register a new user
@@ -35,7 +39,7 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
 
   // Prepare response (exclude password)
   const userResponse: User = {
-    _id: user._id.toString(),
+    id: user._id.toString(),
     name: user.name,
     email: user.email,
     createdAt: user.createdAt,
@@ -87,7 +91,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   // Prepare response (exclude password)
   const userResponse: User = {
-    _id: user._id.toString(),
+    id: user._id.toString(),
     name: user.name,
     email: user.email,
     createdAt: user.createdAt,
@@ -142,7 +146,7 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response) => 
 
   const response: AuthResponse = {
     user: {
-      _id: user._id.toString(),
+      id: user._id.toString(),
       name: user.name,
       email: user.email,
       createdAt: user.createdAt,
@@ -168,7 +172,7 @@ export const getProfile = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Fetch fresh user data
-  const user = await UserModel.findById(req.user._id);
+  const user = await UserModel.findById(req.user.id);
   if (!user) {
     throw new AppError('User not found', 404, 'USER_NOT_FOUND');
   }
@@ -177,7 +181,7 @@ export const getProfile = asyncHandler(async (req: Request, res: Response) => {
     success: true,
     message: 'Profile retrieved successfully',
     data: {
-      _id: user._id.toString(),
+      id: user._id.toString(),
       name: user.name,
       email: user.email,
       createdAt: user.createdAt,
@@ -195,7 +199,7 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
   }
 
   const { name, email } = req.body;
-  const userId = req.user._id;
+  const userId = req.user.id;
 
   // Check if email is already taken by another user
   if (email && email !== req.user.email) {
@@ -235,7 +239,7 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
     success: true,
     message: 'Profile updated successfully',
     data: {
-      _id: updatedUser._id.toString(),
+      id: updatedUser._id.toString(),
       name: updatedUser.name,
       email: updatedUser.email,
       createdAt: updatedUser.createdAt,
@@ -253,7 +257,7 @@ export const changePassword = asyncHandler(async (req: Request, res: Response) =
   }
 
   const { currentPassword, newPassword } = req.body;
-  const userId = req.user._id;
+  const userId = req.user.id;
 
   // Find user with password
   const user = await UserModel.findById(userId).select('+password');
@@ -271,7 +275,7 @@ export const changePassword = asyncHandler(async (req: Request, res: Response) =
   user.password = newPassword;
   await user.save();
 
-  logger.info('User password changed', { userId: user._id });
+  logger.info('User password changed', { userId: user.id });
 
   res.json({
     success: true,
@@ -287,7 +291,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
   // For now, we'll just return success as the client should remove the token
   
   if (req.user) {
-    logger.info('User logged out', { userId: req.user._id });
+    logger.info('User logged out', { userId: req.user.id });
   }
 
   res.json({
@@ -327,7 +331,7 @@ export const getUserStats = asyncHandler(async (req: Request, res: Response) => 
     throw new AppError('User not authenticated', 401, ErrorCodes.UNAUTHORIZED);
   }
 
-  const userId = req.user._id;
+  const userId = req.user.id;
 
   // Import VideoCallModel here to avoid circular dependency
   const { VideoCallModel } = await import('../models/video-call.model');

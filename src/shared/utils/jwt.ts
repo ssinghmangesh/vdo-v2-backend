@@ -24,7 +24,7 @@ class JWTService {
   constructor() {
     this.accessTokenSecret = process.env.JWT_ACCESS_SECRET || 'your-access-secret-key';
     this.refreshTokenSecret = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
-    this.accessTokenExpiry = process.env.JWT_ACCESS_EXPIRY || '15m';
+    this.accessTokenExpiry = process.env.JWT_ACCESS_EXPIRY || '1d';
     this.refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY || '7d';
 
     // Warn if using default secrets in production
